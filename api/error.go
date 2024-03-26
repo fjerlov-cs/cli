@@ -7,10 +7,11 @@ import (
 type EntityType string
 
 const (
-	EntityTypeParser      EntityType = "parser"
-	EntityTypeAction      EntityType = "action"
-	EntityTypeAlert       EntityType = "alert"
-	EntityTypeFilterAlert EntityType = "filter-alert"
+	EntityTypeParser         EntityType = "parser"
+	EntityTypeAction         EntityType = "action"
+	EntityTypeAlert          EntityType = "alert"
+	EntityTypeFilterAlert    EntityType = "filter-alert"
+	EntityTypeAggregateAlert EntityType = "aggregate-alert"
 )
 
 func (e EntityType) String() string {
@@ -58,6 +59,13 @@ func AlertNotFound(name string) error {
 func FilterAlertNotFound(name string) error {
 	return EntityNotFound{
 		entityType: EntityTypeFilterAlert,
+		key:        name,
+	}
+}
+
+func AggregateAlertNotFound(name string) error {
+	return EntityNotFound{
+		entityType: EntityTypeAggregateAlert,
 		key:        name,
 	}
 }
