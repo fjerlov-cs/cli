@@ -15,7 +15,6 @@ type ScheduledSearch struct {
 	Enabled                    graphql.Boolean  `json:"enabled"`
 	ActionsV2                  []Action         `json:"actionsV2"`
 	RunAsUser                  User             `json:"runAsUser,omitempty"`
-	LastScheduledSearch        Long             `json:"lastScheduledSearch"`
 	TimeOfNextPlannedExecution Long             `json:"timeOfNextPlannedExecution"`
 	Labels                     []graphql.String `json:"labels"`
 	QueryOwnership             QueryOwnership   `json:"queryOwnership"`

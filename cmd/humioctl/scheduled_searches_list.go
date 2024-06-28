@@ -52,7 +52,7 @@ func newScheduledSearchesListCmd() *cobra.Command {
 				}
 			}
 
-			printOverviewTable(cmd, []string{"ID", "Name", "Description", "Query Start", "Query End", "TimeZone", "Schedule", "Backfill Limit", "Action Names", "Labels", "Enabled", "Run As User ID", "Query Ownership Type"}, rows)
+			printOverviewTable(cmd, []string{"ID", "Name", "Description", "Query Start", "Query End", "Time Zone", "Schedule", "Backfill Limit", "Action Names", "Labels", "Enabled", "Run As User ID", "Query Ownership Type"}, rows)
 		},
 	}
 

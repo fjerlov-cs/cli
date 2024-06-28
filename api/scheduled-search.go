@@ -7,22 +7,20 @@ import (
 )
 
 type ScheduledSearch struct {
-	ID                         string   `graphql:"id"                         yaml:"-"                          json:"id"`
-	Name                       string   `graphql:"name"                       yaml:"name"                       json:"name"`
-	Description                string   `graphql:"description"                yaml:"description,omitempty"      json:"description,omitempty"`
-	QueryString                string   `graphql:"queryString"                yaml:"queryString"                json:"queryString"`
-	QueryStart                 string   `graphql:"queryStart"                 yaml:"queryStart"                 json:"queryStart"`
-	QueryEnd                   string   `graphql:"queryEnd"                   yaml:"queryEnd"                   json:"queryEnd"`
-	TimeZone                   string   `graphql:"timeZone"                   yaml:"timeZone"                   json:"timeZone"`
-	Schedule                   string   `graphql:"schedule"                   yaml:"schedule"                   json:"schedule"`
-	BackfillLimit              int      `graphql:"backfillLimit"              yaml:"backfillLimit"              json:"backfillLimit"`
-	Enabled                    bool     `graphql:"enabled"                    yaml:"enabled"                    json:"enabled"`
-	ActionNames                []string `graphql:"actionNames"                yaml:"actionNames"                json:"actionNames"`
-	RunAsUserID                string   `graphql:"runAsUserId"                yaml:"runAsUserId,omitempty"      json:"runAsUserId,omitempty"`
-	LastScheduledSearch        int      `graphql:"lastScheduledSearch"        yaml:"-"                          json:"lastScheduledSearch"`
-	TimeOfNextPlannedExecution int      `graphql:"timeOfNextPlannedExecution" yaml:"-"                          json:"timeOfNextPlannedExecution"`
-	Labels                     []string `graphql:"labels"                     yaml:"labels"                     json:"labels"`
-	QueryOwnershipType         string   `graphql:"queryOwnership"             yaml:"queryOwnershipType"         json:"queryOwnershipType"`
+	ID                 string   `graphql:"id"                         yaml:"-"                          json:"id"`
+	Name               string   `graphql:"name"                       yaml:"name"                       json:"name"`
+	Description        string   `graphql:"description"                yaml:"description,omitempty"      json:"description,omitempty"`
+	QueryString        string   `graphql:"queryString"                yaml:"queryString"                json:"queryString"`
+	QueryStart         string   `graphql:"queryStart"                 yaml:"queryStart"                 json:"queryStart"`
+	QueryEnd           string   `graphql:"queryEnd"                   yaml:"queryEnd"                   json:"queryEnd"`
+	TimeZone           string   `graphql:"timeZone"                   yaml:"timeZone"                   json:"timeZone"`
+	Schedule           string   `graphql:"schedule"                   yaml:"schedule"                   json:"schedule"`
+	BackfillLimit      int      `graphql:"backfillLimit"              yaml:"backfillLimit"              json:"backfillLimit"`
+	Enabled            bool     `graphql:"enabled"                    yaml:"enabled"                    json:"enabled"`
+	ActionNames        []string `graphql:"actionNames"                yaml:"actionNames"                json:"actionNames"`
+	RunAsUserID        string   `graphql:"runAsUserId"                yaml:"runAsUserId,omitempty"      json:"runAsUserId,omitempty"`
+	Labels             []string `graphql:"labels"                     yaml:"labels"                     json:"labels"`
+	QueryOwnershipType string   `graphql:"queryOwnership"             yaml:"queryOwnershipType"         json:"queryOwnershipType"`
 }
 
 type ScheduledSearches struct {
@@ -226,21 +224,19 @@ func mapHumioGraphqlScheduledSearchToScheduledSearch(input humiographql.Schedule
 	}
 
 	return ScheduledSearch{
-		ID:                         string(input.ID),
-		Name:                       string(input.Name),
-		Description:                string(input.Description),
-		QueryString:                string(input.QueryString),
-		QueryStart:                 string(input.Start),
-		QueryEnd:                   string(input.End),
-		TimeZone:                   string(input.TimeZone),
-		Schedule:                   string(input.Schedule),
-		BackfillLimit:              int(input.BackfillLimit),
-		LastScheduledSearch:        int(input.LastScheduledSearch),
-		TimeOfNextPlannedExecution: int(input.TimeOfNextPlannedExecution),
-		ActionNames:                actionNames,
-		Labels:                     labels,
-		Enabled:                    bool(input.Enabled),
-		QueryOwnershipType:         queryOwnershipType,
-		RunAsUserID:                runAsUserID,
+		ID:                 string(input.ID),
+		Name:               string(input.Name),
+		Description:        string(input.Description),
+		QueryString:        string(input.QueryString),
+		QueryStart:         string(input.Start),
+		QueryEnd:           string(input.End),
+		TimeZone:           string(input.TimeZone),
+		Schedule:           string(input.Schedule),
+		BackfillLimit:      int(input.BackfillLimit),
+		ActionNames:        actionNames,
+		Labels:             labels,
+		Enabled:            bool(input.Enabled),
+		QueryOwnershipType: queryOwnershipType,
+		RunAsUserID:        runAsUserID,
 	}
 }

@@ -58,8 +58,6 @@ func newScheduledSearchesShowCmd() *cobra.Command {
 				{format.String("Enabled"), format.Bool(scheduledSearch.Enabled)},
 				{format.String("Actions"), format.String(strings.Join(scheduledSearch.ActionNames, ", "))},
 				{format.String("Run As User ID"), format.String(scheduledSearch.RunAsUserID)},
-				{format.String("LastScheduledSearch"), format.Int(scheduledSearch.LastScheduledSearch)},
-				{format.String("TimeOfNextPlannedExecution"), format.Int(scheduledSearch.TimeOfNextPlannedExecution)},
 				{format.String("Labels"), format.String(strings.Join(scheduledSearch.Labels, ", "))},
 				{format.String("QueryOwnershipType"), format.String(scheduledSearch.QueryOwnershipType)},
 			}
