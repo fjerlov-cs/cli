@@ -15,6 +15,7 @@
 package main
 
 import (
+	"github.com/humio/cli/api"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -51,5 +52,31 @@ func newAlertsExportCmd() *cobra.Command {
 
 	cmd.Flags().StringVarP(&outputName, "output", "o", "", "The file path where the alert should be written. Defaults to ./<alert-name>.yaml")
 
+	return &cmd
+}
+
+func newExportAllLegacyAlerts() *cobra.Command {
+	cmd := cobra.Command{
+		Use:   "export-all <view>",
+		Short: "Export all legacy alerts",
+		Long:  `Export all legacy alerts to yaml files with naming <legacy-alert-name>.yaml.`,
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			view := args[0]
+			client := NewApiClient(cmd)
+
+			var legacyAlerts []api.Alert
+			legacyAlerts, err := client.Alerts().List(view)
+			exitOnError(cmd, err, "Error fetching legacy alerts")
+
+			for _, alert := range legacyAlerts {
+				yamlData, err := yaml.Marshal(&alert)
+				exitOnError(cmd, err, "Failed to serialize the legacy alert")
+				outFilePath := alert.Name + ".yaml"
+				err = os.WriteFile(outFilePath, yamlData, 0600)
+				exitOnError(cmd, err, "Error saving the legacy alert file")
+			}
+		},
+	}
 	return &cmd
 }
