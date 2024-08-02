@@ -126,20 +126,20 @@ func migrateLegacyAlert(
 
 	intervalModified := queryStartSeconds != searchIntervalSeconds
 
-	if intervalModified && queryStartSeconds == throttleTimeSeconds {
-		throttleTimeSeconds = searchIntervalSeconds
-	}
-
-	if intervalModified && queryStartSeconds != legacyAlert.ThrottleTimeMillis/1000 {
-		cmd.Printf(
-			"[%s] [%s] [FAILED] search interval was changed from `%s` to `%d seconds` but was not equal to throttle time `%d millis` and could not be migrated. Correct query start and throttle time manually and try again.",
-			progress,
-			shortName,
-			legacyAlert.QueryStart,
-			searchIntervalSeconds,
-			legacyAlert.ThrottleTimeMillis,
-		)
-		return
+	if intervalModified {
+		if queryStartSeconds == legacyAlert.ThrottleTimeMillis/1000 {
+			throttleTimeSeconds = searchIntervalSeconds
+		} else {
+			cmd.Printf(
+				"[%s] [%s] [FAILED] search interval was changed from `%s` to `%d seconds` but was not equal to throttle time `%d millis` and could not be migrated. Correct query start and throttle time manually and try again.",
+				progress,
+				shortName,
+				legacyAlert.QueryStart,
+				searchIntervalSeconds,
+				legacyAlert.ThrottleTimeMillis,
+			)
+			return
+		}
 	}
 
 	aggregateAlert := &api.AggregateAlert{
