@@ -17,6 +17,7 @@ package main
 import (
 	"github.com/humio/cli/api"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -72,7 +73,8 @@ func newExportAllLegacyAlerts() *cobra.Command {
 			for _, alert := range legacyAlerts {
 				yamlData, err := yaml.Marshal(&alert)
 				exitOnError(cmd, err, "Failed to serialize the legacy alert")
-				outFilePath := alert.Name + ".yaml"
+				sanitizedAlertName := strings.ReplaceAll(strings.ReplaceAll(alert.Name, "/", "?"), "\\", "?")
+				outFilePath := sanitizedAlertName + ".yaml"
 				err = os.WriteFile(outFilePath, yamlData, 0600)
 				exitOnError(cmd, err, "Error saving the legacy alert file")
 			}
