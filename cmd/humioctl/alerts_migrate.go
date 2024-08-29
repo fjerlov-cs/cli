@@ -83,6 +83,17 @@ func migrateLegacyAlert(
 	var shortName, progress string
 	progress = fmt.Sprintf("%d/%d", i, size)
 
+	if legacyAlert.Enabled == false {
+		cmd.Printf(
+			"[%s] [%s] [INFO] skipping disabled legacy alert %+v %+v\n",
+			progress,
+			shortName,
+			legacyAlert.Name,
+			legacyAlert.ID,
+		)
+		return
+	}
+
 	if len(legacyAlert.Name) >= 20 {
 		shortName = fmt.Sprintf("%s...", legacyAlert.Name[:17])
 	} else {
