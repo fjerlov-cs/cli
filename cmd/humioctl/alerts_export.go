@@ -16,11 +16,9 @@ package main
 
 import (
 	"github.com/humio/cli/api"
-	"os"
-	"strings"
-
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+	"os"
 )
 
 func newAlertsExportCmd() *cobra.Command {
@@ -56,29 +54,41 @@ func newAlertsExportCmd() *cobra.Command {
 	return &cmd
 }
 
-func newExportAllLegacyAlerts() *cobra.Command {
+func newAlertsExportAllCmd() *cobra.Command {
+	var outputDirectory string
+
 	cmd := cobra.Command{
 		Use:   "export-all <view>",
-		Short: "Export all legacy alerts",
-		Long:  `Export all legacy alerts to yaml files with naming <legacy-alert-name>.yaml.`,
+		Short: "Export all alerts",
+		Long:  `Export all alerts to yaml files with naming <sanitized-alert-name>.yaml. All non-alphanumeric characters will be replaced with underscore.`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			view := args[0]
 			client := NewApiClient(cmd)
 
-			var legacyAlerts []api.Alert
-			legacyAlerts, err := client.Alerts().List(view)
-			exitOnError(cmd, err, "Error fetching legacy alerts")
+			var alerts []api.Alert
+			alerts, err := client.Alerts().List(view)
+			exitOnError(cmd, err, "Error fetching alerts")
 
-			for _, alert := range legacyAlerts {
+			for _, alert := range alerts {
 				yamlData, err := yaml.Marshal(&alert)
-				exitOnError(cmd, err, "Failed to serialize the legacy alert")
-				sanitizedAlertName := strings.ReplaceAll(strings.ReplaceAll(alert.Name, "/", "?"), "\\", "?")
-				outFilePath := sanitizedAlertName + ".yaml"
+				exitOnError(cmd, err, "Failed to serialize the alert")
+				alertFilename := sanitizeTriggerName(alert.Name) + ".yaml"
+
+				var outFilePath string
+				if outputDirectory != "" {
+					outFilePath = outputDirectory + "/" + alertFilename
+				} else {
+					outFilePath = alertFilename
+				}
+
 				err = os.WriteFile(outFilePath, yamlData, 0600)
-				exitOnError(cmd, err, "Error saving the legacy alert file")
+				exitOnError(cmd, err, "Error saving the alert to file")
 			}
 		},
 	}
+
+	cmd.Flags().StringVarP(&outputDirectory, "outputDirectory", "d", "", "The file path where the alerts should be written. Defaults to current directory.")
+
 	return &cmd
 }
