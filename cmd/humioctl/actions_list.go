@@ -39,7 +39,7 @@ func newActionsListCmd() *cobra.Command {
 
 				rows = append(rows, []format.Value{
 					format.String(action.Name),
-					format.String(string(action.Type)),
+					format.String(action.Type),
 					format.String(strings.Join(action.GetLabels(), ",")),
 				})
 			}
