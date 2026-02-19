@@ -21,6 +21,7 @@ import (
 // ActionDetailsHumioRepoAction
 // ActionDetailsOpsGenieAction
 // ActionDetailsPagerDutyAction
+// ActionDetailsS3Action
 // ActionDetailsSlackAction
 // ActionDetailsSlackPostMessageAction
 // ActionDetailsUploadFileAction
@@ -31,12 +32,14 @@ type ActionDetails interface {
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	GetId() string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	GetName() string
 }
 
@@ -44,6 +47,7 @@ func (v *ActionDetailsEmailAction) implementsGraphQLInterfaceActionDetails()    
 func (v *ActionDetailsHumioRepoAction) implementsGraphQLInterfaceActionDetails()        {}
 func (v *ActionDetailsOpsGenieAction) implementsGraphQLInterfaceActionDetails()         {}
 func (v *ActionDetailsPagerDutyAction) implementsGraphQLInterfaceActionDetails()        {}
+func (v *ActionDetailsS3Action) implementsGraphQLInterfaceActionDetails()               {}
 func (v *ActionDetailsSlackAction) implementsGraphQLInterfaceActionDetails()            {}
 func (v *ActionDetailsSlackPostMessageAction) implementsGraphQLInterfaceActionDetails() {}
 func (v *ActionDetailsUploadFileAction) implementsGraphQLInterfaceActionDetails()       {}
@@ -75,6 +79,9 @@ func __unmarshalActionDetails(b []byte, v *ActionDetails) error {
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(ActionDetailsPagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(ActionDetailsS3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(ActionDetailsSlackAction)
@@ -136,6 +143,14 @@ func __marshalActionDetails(v *ActionDetails) ([]byte, error) {
 			*ActionDetailsPagerDutyAction
 		}{typename, v}
 		return json.Marshal(result)
+	case *ActionDetailsS3Action:
+		typename = "S3Action"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsS3Action
+		}{typename, v}
+		return json.Marshal(result)
 	case *ActionDetailsSlackAction:
 		typename = "SlackAction"
 
@@ -189,9 +204,11 @@ func __marshalActionDetails(v *ActionDetails) ([]byte, error) {
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsEmailAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// List of email addresses to send an email to.
 	// Stability: Long-term
@@ -202,9 +219,12 @@ type ActionDetailsEmailAction struct {
 	// Body of the email. Can be templated with values from the result.
 	// Stability: Long-term
 	EmailBodyTemplate *string `json:"emailBodyTemplate"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsEmailAction.Id, and is useful for accessing the field via an interface.
@@ -224,6 +244,9 @@ func (v *ActionDetailsEmailAction) GetEmailBodyTemplate() *string { return v.Ema
 
 // GetUseProxy returns ActionDetailsEmailAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsEmailAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsEmailAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsEmailAction) GetLabels() []string { return v.Labels }
 
 // ActionDetailsFieldsSlackFieldEntry includes the requested fields of the GraphQL type SlackFieldEntry.
 // The GraphQL type's documentation follows.
@@ -268,13 +291,18 @@ func (v *ActionDetailsHeadersHttpHeaderEntry) GetValue() string { return v.Value
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsHumioRepoAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// Humio ingest token for the dataspace that the action should ingest into.
 	// Stability: Long-term
 	IngestToken string `json:"ingestToken"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsHumioRepoAction.Id, and is useful for accessing the field via an interface.
@@ -286,14 +314,19 @@ func (v *ActionDetailsHumioRepoAction) GetName() string { return v.Name }
 // GetIngestToken returns ActionDetailsHumioRepoAction.IngestToken, and is useful for accessing the field via an interface.
 func (v *ActionDetailsHumioRepoAction) GetIngestToken() string { return v.IngestToken }
 
+// GetLabels returns ActionDetailsHumioRepoAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsHumioRepoAction) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of OpsGenieAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsOpsGenieAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// OpsGenie webhook url to send the request to.
 	// Stability: Long-term
@@ -301,9 +334,12 @@ type ActionDetailsOpsGenieAction struct {
 	// Key to authenticate with OpsGenie.
 	// Stability: Long-term
 	GenieKey string `json:"genieKey"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsOpsGenieAction.Id, and is useful for accessing the field via an interface.
@@ -321,14 +357,19 @@ func (v *ActionDetailsOpsGenieAction) GetGenieKey() string { return v.GenieKey }
 // GetUseProxy returns ActionDetailsOpsGenieAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsOpsGenieAction) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns ActionDetailsOpsGenieAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsOpsGenieAction) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of PagerDutyAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsPagerDutyAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// Severity level to give to the message.
 	// Stability: Long-term
@@ -336,9 +377,12 @@ type ActionDetailsPagerDutyAction struct {
 	// Routing key to authenticate with PagerDuty.
 	// Stability: Long-term
 	RoutingKey string `json:"routingKey"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsPagerDutyAction.Id, and is useful for accessing the field via an interface.
@@ -356,14 +400,86 @@ func (v *ActionDetailsPagerDutyAction) GetRoutingKey() string { return v.Routing
 // GetUseProxy returns ActionDetailsPagerDutyAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsPagerDutyAction) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns ActionDetailsPagerDutyAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsPagerDutyAction) GetLabels() []string { return v.Labels }
+
+// ActionDetails includes the GraphQL fields of S3Action requested by the fragment ActionDetails.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsS3Action struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// ARN of the role to be assumed.
+	// Stability: Long-term
+	RoleArn string `json:"roleArn"`
+	// AWS region. For options see: https://docs.aws.amazon.com/general/latest/gr/s3.html
+	// Stability: Long-term
+	AwsRegion string `json:"awsRegion"`
+	// Name of the bucket.
+	// Stability: Long-term
+	BucketName string `json:"bucketName"`
+	// Name of the file(s). You can use most message templates for this. See documentation for S3 action: https://library.humio.com/data-analysis/automated-actions-s3.html
+	// Stability: Long-term
+	FileName string `json:"fileName"`
+	// Output format type for the result. Can be either NDJSON or CSV.
+	// Stability: Long-term
+	OutputFormat S3ActionEventOutputFormat `json:"outputFormat"`
+	// Whether to output metadata for the result. Metadata will be output as a separate JSON file.
+	// Stability: Long-term
+	OutputMetadata bool `json:"outputMetadata"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsS3Action.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsS3Action.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetName() string { return v.Name }
+
+// GetRoleArn returns ActionDetailsS3Action.RoleArn, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetRoleArn() string { return v.RoleArn }
+
+// GetAwsRegion returns ActionDetailsS3Action.AwsRegion, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetAwsRegion() string { return v.AwsRegion }
+
+// GetBucketName returns ActionDetailsS3Action.BucketName, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetBucketName() string { return v.BucketName }
+
+// GetFileName returns ActionDetailsS3Action.FileName, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetFileName() string { return v.FileName }
+
+// GetOutputFormat returns ActionDetailsS3Action.OutputFormat, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetOutputFormat() S3ActionEventOutputFormat { return v.OutputFormat }
+
+// GetOutputMetadata returns ActionDetailsS3Action.OutputMetadata, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetOutputMetadata() bool { return v.OutputMetadata }
+
+// GetUseProxy returns ActionDetailsS3Action.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsS3Action.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsS3Action) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of SlackAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsSlackAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// Slack webhook url to send the request to.
 	// Stability: Long-term
@@ -371,9 +487,12 @@ type ActionDetailsSlackAction struct {
 	// Fields to include within the Slack message. Can be templated with values from the result.
 	// Stability: Long-term
 	Fields []ActionDetailsFieldsSlackFieldEntry `json:"fields"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsSlackAction.Id, and is useful for accessing the field via an interface.
@@ -391,14 +510,19 @@ func (v *ActionDetailsSlackAction) GetFields() []ActionDetailsFieldsSlackFieldEn
 // GetUseProxy returns ActionDetailsSlackAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsSlackAction) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns ActionDetailsSlackAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsSlackAction) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of SlackPostMessageAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsSlackPostMessageAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// Api token to authenticate with Slack.
 	// Stability: Long-term
@@ -409,9 +533,12 @@ type ActionDetailsSlackPostMessageAction struct {
 	// Fields to include within the Slack message. Can be templated with values from the result.
 	// Stability: Long-term
 	Fields []ActionDetailsFieldsSlackFieldEntry `json:"fields"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsSlackPostMessageAction.Id, and is useful for accessing the field via an interface.
@@ -434,18 +561,26 @@ func (v *ActionDetailsSlackPostMessageAction) GetFields() []ActionDetailsFieldsS
 // GetUseProxy returns ActionDetailsSlackPostMessageAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsSlackPostMessageAction) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns ActionDetailsSlackPostMessageAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsSlackPostMessageAction) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of UploadFileAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsUploadFileAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// File name for the uploaded file.
 	// Stability: Long-term
 	FileName string `json:"fileName"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsUploadFileAction.Id, and is useful for accessing the field via an interface.
@@ -457,14 +592,19 @@ func (v *ActionDetailsUploadFileAction) GetName() string { return v.Name }
 // GetFileName returns ActionDetailsUploadFileAction.FileName, and is useful for accessing the field via an interface.
 func (v *ActionDetailsUploadFileAction) GetFileName() string { return v.FileName }
 
+// GetLabels returns ActionDetailsUploadFileAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsUploadFileAction) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of VictorOpsAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsVictorOpsAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// Type of the VictorOps message to make.
 	// Stability: Long-term
@@ -472,9 +612,12 @@ type ActionDetailsVictorOpsAction struct {
 	// VictorOps webhook url to send the request to.
 	// Stability: Long-term
 	NotifyUrl string `json:"notifyUrl"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsVictorOpsAction.Id, and is useful for accessing the field via an interface.
@@ -492,14 +635,19 @@ func (v *ActionDetailsVictorOpsAction) GetNotifyUrl() string { return v.NotifyUr
 // GetUseProxy returns ActionDetailsVictorOpsAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsVictorOpsAction) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns ActionDetailsVictorOpsAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsVictorOpsAction) GetLabels() []string { return v.Labels }
+
 // ActionDetails includes the GraphQL fields of WebhookAction requested by the fragment ActionDetails.
 // The GraphQL type's documentation follows.
 //
 // An action that can be invoked from a trigger.
 type ActionDetailsWebhookAction struct {
-	// An action that can be invoked from a trigger.
+	// The id of the action.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 	// Method to use for the request.
 	// Stability: Long-term
@@ -516,9 +664,12 @@ type ActionDetailsWebhookAction struct {
 	// Flag indicating whether SSL should be ignored for the request.
 	// Stability: Long-term
 	IgnoreSSL bool `json:"ignoreSSL"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns ActionDetailsWebhookAction.Id, and is useful for accessing the field via an interface.
@@ -546,6 +697,658 @@ func (v *ActionDetailsWebhookAction) GetIgnoreSSL() bool { return v.IgnoreSSL }
 
 // GetUseProxy returns ActionDetailsWebhookAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *ActionDetailsWebhookAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWebhookAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWebhookAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of Action requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+//
+// ActionDetailsWithoutS3 is implemented by the following types:
+// ActionDetailsWithoutS3EmailAction
+// ActionDetailsWithoutS3HumioRepoAction
+// ActionDetailsWithoutS3OpsGenieAction
+// ActionDetailsWithoutS3PagerDutyAction
+// ActionDetailsWithoutS3S3Action
+// ActionDetailsWithoutS3SlackAction
+// ActionDetailsWithoutS3SlackPostMessageAction
+// ActionDetailsWithoutS3UploadFileAction
+// ActionDetailsWithoutS3VictorOpsAction
+// ActionDetailsWithoutS3WebhookAction
+type ActionDetailsWithoutS3 interface {
+	implementsGraphQLInterfaceActionDetailsWithoutS3()
+	// GetId returns the interface-field "id" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// The id of the action.
+	// Stability: Long-term
+	GetId() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// The name of the action.
+	// Stability: Long-term
+	GetName() string
+}
+
+func (v *ActionDetailsWithoutS3EmailAction) implementsGraphQLInterfaceActionDetailsWithoutS3()     {}
+func (v *ActionDetailsWithoutS3HumioRepoAction) implementsGraphQLInterfaceActionDetailsWithoutS3() {}
+func (v *ActionDetailsWithoutS3OpsGenieAction) implementsGraphQLInterfaceActionDetailsWithoutS3()  {}
+func (v *ActionDetailsWithoutS3PagerDutyAction) implementsGraphQLInterfaceActionDetailsWithoutS3() {}
+func (v *ActionDetailsWithoutS3S3Action) implementsGraphQLInterfaceActionDetailsWithoutS3()        {}
+func (v *ActionDetailsWithoutS3SlackAction) implementsGraphQLInterfaceActionDetailsWithoutS3()     {}
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) implementsGraphQLInterfaceActionDetailsWithoutS3() {
+}
+func (v *ActionDetailsWithoutS3UploadFileAction) implementsGraphQLInterfaceActionDetailsWithoutS3() {}
+func (v *ActionDetailsWithoutS3VictorOpsAction) implementsGraphQLInterfaceActionDetailsWithoutS3()  {}
+func (v *ActionDetailsWithoutS3WebhookAction) implementsGraphQLInterfaceActionDetailsWithoutS3()    {}
+
+func __unmarshalActionDetailsWithoutS3(b []byte, v *ActionDetailsWithoutS3) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "EmailAction":
+		*v = new(ActionDetailsWithoutS3EmailAction)
+		return json.Unmarshal(b, *v)
+	case "HumioRepoAction":
+		*v = new(ActionDetailsWithoutS3HumioRepoAction)
+		return json.Unmarshal(b, *v)
+	case "OpsGenieAction":
+		*v = new(ActionDetailsWithoutS3OpsGenieAction)
+		return json.Unmarshal(b, *v)
+	case "PagerDutyAction":
+		*v = new(ActionDetailsWithoutS3PagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(ActionDetailsWithoutS3S3Action)
+		return json.Unmarshal(b, *v)
+	case "SlackAction":
+		*v = new(ActionDetailsWithoutS3SlackAction)
+		return json.Unmarshal(b, *v)
+	case "SlackPostMessageAction":
+		*v = new(ActionDetailsWithoutS3SlackPostMessageAction)
+		return json.Unmarshal(b, *v)
+	case "UploadFileAction":
+		*v = new(ActionDetailsWithoutS3UploadFileAction)
+		return json.Unmarshal(b, *v)
+	case "VictorOpsAction":
+		*v = new(ActionDetailsWithoutS3VictorOpsAction)
+		return json.Unmarshal(b, *v)
+	case "WebhookAction":
+		*v = new(ActionDetailsWithoutS3WebhookAction)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Action.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ActionDetailsWithoutS3: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalActionDetailsWithoutS3(v *ActionDetailsWithoutS3) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ActionDetailsWithoutS3EmailAction:
+		typename = "EmailAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3EmailAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3HumioRepoAction:
+		typename = "HumioRepoAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3HumioRepoAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3OpsGenieAction:
+		typename = "OpsGenieAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3OpsGenieAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3PagerDutyAction:
+		typename = "PagerDutyAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3PagerDutyAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3S3Action:
+		typename = "S3Action"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3S3Action
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3SlackAction:
+		typename = "SlackAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3SlackAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3SlackPostMessageAction:
+		typename = "SlackPostMessageAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3SlackPostMessageAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3UploadFileAction:
+		typename = "UploadFileAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3UploadFileAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3VictorOpsAction:
+		typename = "VictorOpsAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3VictorOpsAction
+		}{typename, v}
+		return json.Marshal(result)
+	case *ActionDetailsWithoutS3WebhookAction:
+		typename = "WebhookAction"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ActionDetailsWithoutS3WebhookAction
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ActionDetailsWithoutS3: "%T"`, v)
+	}
+}
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of EmailAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3EmailAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// List of email addresses to send an email to.
+	// Stability: Long-term
+	Recipients []string `json:"recipients"`
+	// Subject of the email. Can be templated with values from the result.
+	// Stability: Long-term
+	SubjectTemplate *string `json:"subjectTemplate"`
+	// Body of the email. Can be templated with values from the result.
+	// Stability: Long-term
+	EmailBodyTemplate *string `json:"emailBodyTemplate"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3EmailAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3EmailAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetName() string { return v.Name }
+
+// GetRecipients returns ActionDetailsWithoutS3EmailAction.Recipients, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetRecipients() []string { return v.Recipients }
+
+// GetSubjectTemplate returns ActionDetailsWithoutS3EmailAction.SubjectTemplate, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetSubjectTemplate() *string { return v.SubjectTemplate }
+
+// GetEmailBodyTemplate returns ActionDetailsWithoutS3EmailAction.EmailBodyTemplate, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetEmailBodyTemplate() *string {
+	return v.EmailBodyTemplate
+}
+
+// GetUseProxy returns ActionDetailsWithoutS3EmailAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3EmailAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3EmailAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3FieldsSlackFieldEntry includes the requested fields of the GraphQL type SlackFieldEntry.
+// The GraphQL type's documentation follows.
+//
+// Field entry in a Slack message
+type ActionDetailsWithoutS3FieldsSlackFieldEntry struct {
+	// Key of a Slack field.
+	// Stability: Long-term
+	FieldName string `json:"fieldName"`
+	// Value of a Slack field.
+	// Stability: Long-term
+	Value string `json:"value"`
+}
+
+// GetFieldName returns ActionDetailsWithoutS3FieldsSlackFieldEntry.FieldName, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3FieldsSlackFieldEntry) GetFieldName() string { return v.FieldName }
+
+// GetValue returns ActionDetailsWithoutS3FieldsSlackFieldEntry.Value, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3FieldsSlackFieldEntry) GetValue() string { return v.Value }
+
+// ActionDetailsWithoutS3HeadersHttpHeaderEntry includes the requested fields of the GraphQL type HttpHeaderEntry.
+// The GraphQL type's documentation follows.
+//
+// A http request header.
+type ActionDetailsWithoutS3HeadersHttpHeaderEntry struct {
+	// Key of a http(s) header.
+	// Stability: Long-term
+	Header string `json:"header"`
+	// Value of a http(s) header.
+	// Stability: Long-term
+	Value string `json:"value"`
+}
+
+// GetHeader returns ActionDetailsWithoutS3HeadersHttpHeaderEntry.Header, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3HeadersHttpHeaderEntry) GetHeader() string { return v.Header }
+
+// GetValue returns ActionDetailsWithoutS3HeadersHttpHeaderEntry.Value, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3HeadersHttpHeaderEntry) GetValue() string { return v.Value }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of HumioRepoAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3HumioRepoAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// Humio ingest token for the dataspace that the action should ingest into.
+	// Stability: Long-term
+	IngestToken string `json:"ingestToken"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3HumioRepoAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3HumioRepoAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3HumioRepoAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3HumioRepoAction) GetName() string { return v.Name }
+
+// GetIngestToken returns ActionDetailsWithoutS3HumioRepoAction.IngestToken, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3HumioRepoAction) GetIngestToken() string { return v.IngestToken }
+
+// GetLabels returns ActionDetailsWithoutS3HumioRepoAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3HumioRepoAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of OpsGenieAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3OpsGenieAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// OpsGenie webhook url to send the request to.
+	// Stability: Long-term
+	ApiUrl string `json:"apiUrl"`
+	// Key to authenticate with OpsGenie.
+	// Stability: Long-term
+	GenieKey string `json:"genieKey"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3OpsGenieAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3OpsGenieAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3OpsGenieAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3OpsGenieAction) GetName() string { return v.Name }
+
+// GetApiUrl returns ActionDetailsWithoutS3OpsGenieAction.ApiUrl, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3OpsGenieAction) GetApiUrl() string { return v.ApiUrl }
+
+// GetGenieKey returns ActionDetailsWithoutS3OpsGenieAction.GenieKey, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3OpsGenieAction) GetGenieKey() string { return v.GenieKey }
+
+// GetUseProxy returns ActionDetailsWithoutS3OpsGenieAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3OpsGenieAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3OpsGenieAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3OpsGenieAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of PagerDutyAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3PagerDutyAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// Severity level to give to the message.
+	// Stability: Long-term
+	Severity string `json:"severity"`
+	// Routing key to authenticate with PagerDuty.
+	// Stability: Long-term
+	RoutingKey string `json:"routingKey"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3PagerDutyAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3PagerDutyAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3PagerDutyAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3PagerDutyAction) GetName() string { return v.Name }
+
+// GetSeverity returns ActionDetailsWithoutS3PagerDutyAction.Severity, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3PagerDutyAction) GetSeverity() string { return v.Severity }
+
+// GetRoutingKey returns ActionDetailsWithoutS3PagerDutyAction.RoutingKey, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3PagerDutyAction) GetRoutingKey() string { return v.RoutingKey }
+
+// GetUseProxy returns ActionDetailsWithoutS3PagerDutyAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3PagerDutyAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3PagerDutyAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3PagerDutyAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of S3Action requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3S3Action struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+}
+
+// GetId returns ActionDetailsWithoutS3S3Action.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3S3Action) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3S3Action.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3S3Action) GetName() string { return v.Name }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of SlackAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3SlackAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// Slack webhook url to send the request to.
+	// Stability: Long-term
+	Url string `json:"url"`
+	// Fields to include within the Slack message. Can be templated with values from the result.
+	// Stability: Long-term
+	Fields []ActionDetailsWithoutS3FieldsSlackFieldEntry `json:"fields"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3SlackAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3SlackAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackAction) GetName() string { return v.Name }
+
+// GetUrl returns ActionDetailsWithoutS3SlackAction.Url, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackAction) GetUrl() string { return v.Url }
+
+// GetFields returns ActionDetailsWithoutS3SlackAction.Fields, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackAction) GetFields() []ActionDetailsWithoutS3FieldsSlackFieldEntry {
+	return v.Fields
+}
+
+// GetUseProxy returns ActionDetailsWithoutS3SlackAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3SlackAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of SlackPostMessageAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3SlackPostMessageAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// Api token to authenticate with Slack.
+	// Stability: Long-term
+	ApiToken string `json:"apiToken"`
+	// List of Slack channels to message.
+	// Stability: Long-term
+	Channels []string `json:"channels"`
+	// Fields to include within the Slack message. Can be templated with values from the result.
+	// Stability: Long-term
+	Fields []ActionDetailsWithoutS3FieldsSlackFieldEntry `json:"fields"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3SlackPostMessageAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3SlackPostMessageAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetName() string { return v.Name }
+
+// GetApiToken returns ActionDetailsWithoutS3SlackPostMessageAction.ApiToken, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetApiToken() string { return v.ApiToken }
+
+// GetChannels returns ActionDetailsWithoutS3SlackPostMessageAction.Channels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetChannels() []string { return v.Channels }
+
+// GetFields returns ActionDetailsWithoutS3SlackPostMessageAction.Fields, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetFields() []ActionDetailsWithoutS3FieldsSlackFieldEntry {
+	return v.Fields
+}
+
+// GetUseProxy returns ActionDetailsWithoutS3SlackPostMessageAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3SlackPostMessageAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3SlackPostMessageAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of UploadFileAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3UploadFileAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// File name for the uploaded file.
+	// Stability: Long-term
+	FileName string `json:"fileName"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3UploadFileAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3UploadFileAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3UploadFileAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3UploadFileAction) GetName() string { return v.Name }
+
+// GetFileName returns ActionDetailsWithoutS3UploadFileAction.FileName, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3UploadFileAction) GetFileName() string { return v.FileName }
+
+// GetLabels returns ActionDetailsWithoutS3UploadFileAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3UploadFileAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of VictorOpsAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3VictorOpsAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// Type of the VictorOps message to make.
+	// Stability: Long-term
+	MessageType string `json:"messageType"`
+	// VictorOps webhook url to send the request to.
+	// Stability: Long-term
+	NotifyUrl string `json:"notifyUrl"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3VictorOpsAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3VictorOpsAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3VictorOpsAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3VictorOpsAction) GetName() string { return v.Name }
+
+// GetMessageType returns ActionDetailsWithoutS3VictorOpsAction.MessageType, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3VictorOpsAction) GetMessageType() string { return v.MessageType }
+
+// GetNotifyUrl returns ActionDetailsWithoutS3VictorOpsAction.NotifyUrl, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3VictorOpsAction) GetNotifyUrl() string { return v.NotifyUrl }
+
+// GetUseProxy returns ActionDetailsWithoutS3VictorOpsAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3VictorOpsAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3VictorOpsAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3VictorOpsAction) GetLabels() []string { return v.Labels }
+
+// ActionDetailsWithoutS3 includes the GraphQL fields of WebhookAction requested by the fragment ActionDetailsWithoutS3.
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ActionDetailsWithoutS3WebhookAction struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// Method to use for the request.
+	// Stability: Long-term
+	Method string `json:"method"`
+	// Url to send the http(s) request to.
+	// Stability: Long-term
+	Url string `json:"url"`
+	// Headers of the http(s) request.
+	// Stability: Long-term
+	Headers []ActionDetailsWithoutS3HeadersHttpHeaderEntry `json:"headers"`
+	// Body of the http(s) request. Can be templated with values from the result.
+	// Stability: Long-term
+	WebhookBodyTemplate string `json:"WebhookBodyTemplate"`
+	// Flag indicating whether SSL should be ignored for the request.
+	// Stability: Long-term
+	IgnoreSSL bool `json:"ignoreSSL"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns ActionDetailsWithoutS3WebhookAction.Id, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetId() string { return v.Id }
+
+// GetName returns ActionDetailsWithoutS3WebhookAction.Name, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetName() string { return v.Name }
+
+// GetMethod returns ActionDetailsWithoutS3WebhookAction.Method, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetMethod() string { return v.Method }
+
+// GetUrl returns ActionDetailsWithoutS3WebhookAction.Url, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetUrl() string { return v.Url }
+
+// GetHeaders returns ActionDetailsWithoutS3WebhookAction.Headers, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetHeaders() []ActionDetailsWithoutS3HeadersHttpHeaderEntry {
+	return v.Headers
+}
+
+// GetWebhookBodyTemplate returns ActionDetailsWithoutS3WebhookAction.WebhookBodyTemplate, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetWebhookBodyTemplate() string {
+	return v.WebhookBodyTemplate
+}
+
+// GetIgnoreSSL returns ActionDetailsWithoutS3WebhookAction.IgnoreSSL, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetIgnoreSSL() bool { return v.IgnoreSSL }
+
+// GetUseProxy returns ActionDetailsWithoutS3WebhookAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns ActionDetailsWithoutS3WebhookAction.Labels, and is useful for accessing the field via an interface.
+func (v *ActionDetailsWithoutS3WebhookAction) GetLabels() []string { return v.Labels }
 
 // AddIngestTokenAddIngestTokenV3IngestToken includes the requested fields of the GraphQL type IngestToken.
 // The GraphQL type's documentation follows.
@@ -1156,6 +1959,7 @@ func (v *AggregateAlertDetails) __premarshalJSON() (*__premarshalAggregateAlertD
 // AggregateAlertDetailsActionsHumioRepoAction
 // AggregateAlertDetailsActionsOpsGenieAction
 // AggregateAlertDetailsActionsPagerDutyAction
+// AggregateAlertDetailsActionsS3Action
 // AggregateAlertDetailsActionsSlackAction
 // AggregateAlertDetailsActionsSlackPostMessageAction
 // AggregateAlertDetailsActionsUploadFileAction
@@ -1171,7 +1975,8 @@ type AggregateAlertDetailsActionsAction interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	GetName() string
 }
 
@@ -1182,6 +1987,8 @@ func (v *AggregateAlertDetailsActionsHumioRepoAction) implementsGraphQLInterface
 func (v *AggregateAlertDetailsActionsOpsGenieAction) implementsGraphQLInterfaceAggregateAlertDetailsActionsAction() {
 }
 func (v *AggregateAlertDetailsActionsPagerDutyAction) implementsGraphQLInterfaceAggregateAlertDetailsActionsAction() {
+}
+func (v *AggregateAlertDetailsActionsS3Action) implementsGraphQLInterfaceAggregateAlertDetailsActionsAction() {
 }
 func (v *AggregateAlertDetailsActionsSlackAction) implementsGraphQLInterfaceAggregateAlertDetailsActionsAction() {
 }
@@ -1219,6 +2026,9 @@ func __unmarshalAggregateAlertDetailsActionsAction(b []byte, v *AggregateAlertDe
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(AggregateAlertDetailsActionsPagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(AggregateAlertDetailsActionsS3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(AggregateAlertDetailsActionsSlackAction)
@@ -1280,6 +2090,14 @@ func __marshalAggregateAlertDetailsActionsAction(v *AggregateAlertDetailsActions
 			*AggregateAlertDetailsActionsPagerDutyAction
 		}{typename, v}
 		return json.Marshal(result)
+	case *AggregateAlertDetailsActionsS3Action:
+		typename = "S3Action"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*AggregateAlertDetailsActionsS3Action
+		}{typename, v}
+		return json.Marshal(result)
 	case *AggregateAlertDetailsActionsSlackAction:
 		typename = "SlackAction"
 
@@ -1334,7 +2152,8 @@ func __marshalAggregateAlertDetailsActionsAction(v *AggregateAlertDetailsActions
 // An email action.
 type AggregateAlertDetailsActionsEmailAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1350,7 +2169,8 @@ func (v *AggregateAlertDetailsActionsEmailAction) GetName() string { return v.Na
 // A LogScale repository action.
 type AggregateAlertDetailsActionsHumioRepoAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1366,7 +2186,8 @@ func (v *AggregateAlertDetailsActionsHumioRepoAction) GetName() string { return 
 // An OpsGenie action
 type AggregateAlertDetailsActionsOpsGenieAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1382,7 +2203,8 @@ func (v *AggregateAlertDetailsActionsOpsGenieAction) GetName() string { return v
 // A PagerDuty action.
 type AggregateAlertDetailsActionsPagerDutyAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1392,13 +2214,31 @@ func (v *AggregateAlertDetailsActionsPagerDutyAction) GetTypename() *string { re
 // GetName returns AggregateAlertDetailsActionsPagerDutyAction.Name, and is useful for accessing the field via an interface.
 func (v *AggregateAlertDetailsActionsPagerDutyAction) GetName() string { return v.Name }
 
+// AggregateAlertDetailsActionsS3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type AggregateAlertDetailsActionsS3Action struct {
+	Typename *string `json:"__typename"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+}
+
+// GetTypename returns AggregateAlertDetailsActionsS3Action.Typename, and is useful for accessing the field via an interface.
+func (v *AggregateAlertDetailsActionsS3Action) GetTypename() *string { return v.Typename }
+
+// GetName returns AggregateAlertDetailsActionsS3Action.Name, and is useful for accessing the field via an interface.
+func (v *AggregateAlertDetailsActionsS3Action) GetName() string { return v.Name }
+
 // AggregateAlertDetailsActionsSlackAction includes the requested fields of the GraphQL type SlackAction.
 // The GraphQL type's documentation follows.
 //
 // A Slack action
 type AggregateAlertDetailsActionsSlackAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1414,7 +2254,8 @@ func (v *AggregateAlertDetailsActionsSlackAction) GetName() string { return v.Na
 // A slack post-message action.
 type AggregateAlertDetailsActionsSlackPostMessageAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1430,7 +2271,8 @@ func (v *AggregateAlertDetailsActionsSlackPostMessageAction) GetName() string { 
 // An upload file action.
 type AggregateAlertDetailsActionsUploadFileAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1446,7 +2288,8 @@ func (v *AggregateAlertDetailsActionsUploadFileAction) GetName() string { return
 // A VictorOps action.
 type AggregateAlertDetailsActionsVictorOpsAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1462,7 +2305,8 @@ func (v *AggregateAlertDetailsActionsVictorOpsAction) GetName() string { return 
 // A webhook action
 type AggregateAlertDetailsActionsWebhookAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -1477,7 +2321,7 @@ func (v *AggregateAlertDetailsActionsWebhookAction) GetName() string { return v.
 //
 // An alert.
 type AlertDetails struct {
-	// Id of the alert.
+	// Id of the legacy alert.
 	// Stability: Long-term
 	Id string `json:"id"`
 	// Name of the alert.
@@ -1495,8 +2339,6 @@ type AlertDetails struct {
 	// Unix timestamp for when the alert was last triggered.
 	// Stability: Long-term
 	TimeOfLastTrigger *int64 `json:"timeOfLastTrigger"`
-	// Flag indicating whether the calling user has 'starred' the alert.
-	IsStarred bool `json:"isStarred"`
 	// Name of the alert.
 	// Stability: Long-term
 	Description *string `json:"description"`
@@ -1537,9 +2379,6 @@ func (v *AlertDetails) GetThrottleField() *string { return v.ThrottleField }
 
 // GetTimeOfLastTrigger returns AlertDetails.TimeOfLastTrigger, and is useful for accessing the field via an interface.
 func (v *AlertDetails) GetTimeOfLastTrigger() *int64 { return v.TimeOfLastTrigger }
-
-// GetIsStarred returns AlertDetails.IsStarred, and is useful for accessing the field via an interface.
-func (v *AlertDetails) GetIsStarred() bool { return v.IsStarred }
 
 // GetDescription returns AlertDetails.Description, and is useful for accessing the field via an interface.
 func (v *AlertDetails) GetDescription() *string { return v.Description }
@@ -1608,8 +2447,6 @@ type __premarshalAlertDetails struct {
 
 	TimeOfLastTrigger *int64 `json:"timeOfLastTrigger"`
 
-	IsStarred bool `json:"isStarred"`
-
 	Description *string `json:"description"`
 
 	ThrottleTimeMillis int64 `json:"throttleTimeMillis"`
@@ -1642,7 +2479,6 @@ func (v *AlertDetails) __premarshalJSON() (*__premarshalAlertDetails, error) {
 	retval.QueryStart = v.QueryStart
 	retval.ThrottleField = v.ThrottleField
 	retval.TimeOfLastTrigger = v.TimeOfLastTrigger
-	retval.IsStarred = v.IsStarred
 	retval.Description = v.Description
 	retval.ThrottleTimeMillis = v.ThrottleTimeMillis
 	retval.Enabled = v.Enabled
@@ -2052,9 +2888,6 @@ func (v *CreateAlertCreateAlert) GetTimeOfLastTrigger() *int64 {
 	return v.AlertDetails.TimeOfLastTrigger
 }
 
-// GetIsStarred returns CreateAlertCreateAlert.IsStarred, and is useful for accessing the field via an interface.
-func (v *CreateAlertCreateAlert) GetIsStarred() bool { return v.AlertDetails.IsStarred }
-
 // GetDescription returns CreateAlertCreateAlert.Description, and is useful for accessing the field via an interface.
 func (v *CreateAlertCreateAlert) GetDescription() *string { return v.AlertDetails.Description }
 
@@ -2118,8 +2951,6 @@ type __premarshalCreateAlertCreateAlert struct {
 
 	TimeOfLastTrigger *int64 `json:"timeOfLastTrigger"`
 
-	IsStarred bool `json:"isStarred"`
-
 	Description *string `json:"description"`
 
 	ThrottleTimeMillis int64 `json:"throttleTimeMillis"`
@@ -2152,7 +2983,6 @@ func (v *CreateAlertCreateAlert) __premarshalJSON() (*__premarshalCreateAlertCre
 	retval.QueryStart = v.AlertDetails.QueryStart
 	retval.ThrottleField = v.AlertDetails.ThrottleField
 	retval.TimeOfLastTrigger = v.AlertDetails.TimeOfLastTrigger
-	retval.IsStarred = v.AlertDetails.IsStarred
 	retval.Description = v.AlertDetails.Description
 	retval.ThrottleTimeMillis = v.AlertDetails.ThrottleTimeMillis
 	retval.Enabled = v.AlertDetails.Enabled
@@ -2204,9 +3034,12 @@ type CreateEmailActionCreateEmailAction struct {
 	// Body of the email. Can be templated with values from the result.
 	// Stability: Long-term
 	BodyTemplate *string `json:"bodyTemplate"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateEmailActionCreateEmailAction.Id, and is useful for accessing the field via an interface.
@@ -2226,6 +3059,9 @@ func (v *CreateEmailActionCreateEmailAction) GetBodyTemplate() *string { return 
 
 // GetUseProxy returns CreateEmailActionCreateEmailAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreateEmailActionCreateEmailAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreateEmailActionCreateEmailAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateEmailActionCreateEmailAction) GetLabels() []string { return v.Labels }
 
 // CreateEmailActionResponse is returned by CreateEmailAction on success.
 type CreateEmailActionResponse struct {
@@ -2414,6 +3250,9 @@ type CreateHumioRepoActionCreateHumioRepoAction struct {
 	// Humio ingest token for the dataspace that the action should ingest into.
 	// Stability: Long-term
 	IngestToken string `json:"ingestToken"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateHumioRepoActionCreateHumioRepoAction.Id, and is useful for accessing the field via an interface.
@@ -2424,6 +3263,9 @@ func (v *CreateHumioRepoActionCreateHumioRepoAction) GetName() string { return v
 
 // GetIngestToken returns CreateHumioRepoActionCreateHumioRepoAction.IngestToken, and is useful for accessing the field via an interface.
 func (v *CreateHumioRepoActionCreateHumioRepoAction) GetIngestToken() string { return v.IngestToken }
+
+// GetLabels returns CreateHumioRepoActionCreateHumioRepoAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateHumioRepoActionCreateHumioRepoAction) GetLabels() []string { return v.Labels }
 
 // CreateHumioRepoActionResponse is returned by CreateHumioRepoAction on success.
 type CreateHumioRepoActionResponse struct {
@@ -2454,9 +3296,12 @@ type CreateOpsGenieActionCreateOpsGenieAction struct {
 	// Key to authenticate with OpsGenie.
 	// Stability: Long-term
 	GenieKey string `json:"genieKey"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateOpsGenieActionCreateOpsGenieAction.Id, and is useful for accessing the field via an interface.
@@ -2473,6 +3318,9 @@ func (v *CreateOpsGenieActionCreateOpsGenieAction) GetGenieKey() string { return
 
 // GetUseProxy returns CreateOpsGenieActionCreateOpsGenieAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreateOpsGenieActionCreateOpsGenieAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreateOpsGenieActionCreateOpsGenieAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateOpsGenieActionCreateOpsGenieAction) GetLabels() []string { return v.Labels }
 
 // CreateOpsGenieActionResponse is returned by CreateOpsGenieAction on success.
 type CreateOpsGenieActionResponse struct {
@@ -2503,9 +3351,12 @@ type CreatePagerDutyActionCreatePagerDutyAction struct {
 	// Routing key to authenticate with PagerDuty.
 	// Stability: Long-term
 	RoutingKey string `json:"routingKey"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreatePagerDutyActionCreatePagerDutyAction.Id, and is useful for accessing the field via an interface.
@@ -2522,6 +3373,9 @@ func (v *CreatePagerDutyActionCreatePagerDutyAction) GetRoutingKey() string { re
 
 // GetUseProxy returns CreatePagerDutyActionCreatePagerDutyAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreatePagerDutyActionCreatePagerDutyAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreatePagerDutyActionCreatePagerDutyAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreatePagerDutyActionCreatePagerDutyAction) GetLabels() []string { return v.Labels }
 
 // CreatePagerDutyActionResponse is returned by CreatePagerDutyAction on success.
 type CreatePagerDutyActionResponse struct {
@@ -2802,6 +3656,87 @@ type CreateRepositoryResponse struct {
 // GetCreateRepository returns CreateRepositoryResponse.CreateRepository, and is useful for accessing the field via an interface.
 func (v *CreateRepositoryResponse) GetCreateRepository() CreateRepositoryCreateRepositoryCreateRepositoryMutation {
 	return v.CreateRepository
+}
+
+// CreateS3ActionCreateS3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type CreateS3ActionCreateS3Action struct {
+	// The id of the action.
+	// Stability: Long-term
+	Id string `json:"id"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+	// ARN of the role to be assumed.
+	// Stability: Long-term
+	RoleArn string `json:"roleArn"`
+	// AWS region. For options see: https://docs.aws.amazon.com/general/latest/gr/s3.html
+	// Stability: Long-term
+	AwsRegion string `json:"awsRegion"`
+	// Name of the bucket.
+	// Stability: Long-term
+	BucketName string `json:"bucketName"`
+	// Name of the file(s). You can use most message templates for this. See documentation for S3 action: https://library.humio.com/data-analysis/automated-actions-s3.html
+	// Stability: Long-term
+	FileName string `json:"fileName"`
+	// Output format type for the result. Can be either NDJSON or CSV.
+	// Stability: Long-term
+	OutputFormat S3ActionEventOutputFormat `json:"outputFormat"`
+	// Whether to output metadata for the result. Metadata will be output as a separate JSON file.
+	// Stability: Long-term
+	OutputMetadata bool `json:"outputMetadata"`
+	// Defines whether the action should use the configured HTTP proxy to send requests.
+	// Stability: Long-term
+	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
+}
+
+// GetId returns CreateS3ActionCreateS3Action.Id, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetId() string { return v.Id }
+
+// GetName returns CreateS3ActionCreateS3Action.Name, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetName() string { return v.Name }
+
+// GetRoleArn returns CreateS3ActionCreateS3Action.RoleArn, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetRoleArn() string { return v.RoleArn }
+
+// GetAwsRegion returns CreateS3ActionCreateS3Action.AwsRegion, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetAwsRegion() string { return v.AwsRegion }
+
+// GetBucketName returns CreateS3ActionCreateS3Action.BucketName, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetBucketName() string { return v.BucketName }
+
+// GetFileName returns CreateS3ActionCreateS3Action.FileName, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetFileName() string { return v.FileName }
+
+// GetOutputFormat returns CreateS3ActionCreateS3Action.OutputFormat, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetOutputFormat() S3ActionEventOutputFormat {
+	return v.OutputFormat
+}
+
+// GetOutputMetadata returns CreateS3ActionCreateS3Action.OutputMetadata, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetOutputMetadata() bool { return v.OutputMetadata }
+
+// GetUseProxy returns CreateS3ActionCreateS3Action.UseProxy, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreateS3ActionCreateS3Action.Labels, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionCreateS3Action) GetLabels() []string { return v.Labels }
+
+// CreateS3ActionResponse is returned by CreateS3Action on success.
+type CreateS3ActionResponse struct {
+	// Create an S3 action.
+	// Stability: Long-term
+	CreateS3Action CreateS3ActionCreateS3Action `json:"createS3Action"`
+}
+
+// GetCreateS3Action returns CreateS3ActionResponse.CreateS3Action, and is useful for accessing the field via an interface.
+func (v *CreateS3ActionResponse) GetCreateS3Action() CreateS3ActionCreateS3Action {
+	return v.CreateS3Action
 }
 
 // CreateScheduledSearchCreateScheduledSearch includes the requested fields of the GraphQL type ScheduledSearch.
@@ -3222,9 +4157,12 @@ type CreateSlackActionCreateSlackAction struct {
 	// Slack webhook url to send the request to.
 	// Stability: Long-term
 	Url string `json:"url"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateSlackActionCreateSlackAction.Id, and is useful for accessing the field via an interface.
@@ -3243,6 +4181,9 @@ func (v *CreateSlackActionCreateSlackAction) GetUrl() string { return v.Url }
 
 // GetUseProxy returns CreateSlackActionCreateSlackAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreateSlackActionCreateSlackAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreateSlackActionCreateSlackAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateSlackActionCreateSlackAction) GetLabels() []string { return v.Labels }
 
 // CreateSlackActionCreateSlackActionFieldsSlackFieldEntry includes the requested fields of the GraphQL type SlackFieldEntry.
 // The GraphQL type's documentation follows.
@@ -3297,9 +4238,12 @@ type CreateSlackPostMessageActionCreateSlackPostMessageAction struct {
 	// Fields to include within the Slack message. Can be templated with values from the result.
 	// Stability: Long-term
 	Fields []CreateSlackPostMessageActionCreateSlackPostMessageActionFieldsSlackFieldEntry `json:"fields"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateSlackPostMessageActionCreateSlackPostMessageAction.Id, and is useful for accessing the field via an interface.
@@ -3326,6 +4270,11 @@ func (v *CreateSlackPostMessageActionCreateSlackPostMessageAction) GetFields() [
 // GetUseProxy returns CreateSlackPostMessageActionCreateSlackPostMessageAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreateSlackPostMessageActionCreateSlackPostMessageAction) GetUseProxy() bool {
 	return v.UseProxy
+}
+
+// GetLabels returns CreateSlackPostMessageActionCreateSlackPostMessageAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateSlackPostMessageActionCreateSlackPostMessageAction) GetLabels() []string {
+	return v.Labels
 }
 
 // CreateSlackPostMessageActionCreateSlackPostMessageActionFieldsSlackFieldEntry includes the requested fields of the GraphQL type SlackFieldEntry.
@@ -3377,6 +4326,9 @@ type CreateUploadFileActionCreateUploadFileAction struct {
 	// File name for the uploaded file.
 	// Stability: Long-term
 	FileName string `json:"fileName"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateUploadFileActionCreateUploadFileAction.Id, and is useful for accessing the field via an interface.
@@ -3387,6 +4339,9 @@ func (v *CreateUploadFileActionCreateUploadFileAction) GetName() string { return
 
 // GetFileName returns CreateUploadFileActionCreateUploadFileAction.FileName, and is useful for accessing the field via an interface.
 func (v *CreateUploadFileActionCreateUploadFileAction) GetFileName() string { return v.FileName }
+
+// GetLabels returns CreateUploadFileActionCreateUploadFileAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateUploadFileActionCreateUploadFileAction) GetLabels() []string { return v.Labels }
 
 // CreateUploadFileActionResponse is returned by CreateUploadFileAction on success.
 type CreateUploadFileActionResponse struct {
@@ -3417,9 +4372,12 @@ type CreateVictorOpsActionCreateVictorOpsAction struct {
 	// VictorOps webhook url to send the request to.
 	// Stability: Long-term
 	NotifyUrl string `json:"notifyUrl"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateVictorOpsActionCreateVictorOpsAction.Id, and is useful for accessing the field via an interface.
@@ -3436,6 +4394,9 @@ func (v *CreateVictorOpsActionCreateVictorOpsAction) GetNotifyUrl() string { ret
 
 // GetUseProxy returns CreateVictorOpsActionCreateVictorOpsAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreateVictorOpsActionCreateVictorOpsAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreateVictorOpsActionCreateVictorOpsAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateVictorOpsActionCreateVictorOpsAction) GetLabels() []string { return v.Labels }
 
 // CreateVictorOpsActionResponse is returned by CreateVictorOpsAction on success.
 type CreateVictorOpsActionResponse struct {
@@ -3496,9 +4457,12 @@ type CreateWebhookActionCreateWebhookAction struct {
 	// Flag indicating whether SSL should be ignored for the request.
 	// Stability: Long-term
 	IgnoreSSL bool `json:"ignoreSSL"`
-	// Defines whether the action should use the configured proxy to make web requests.
+	// Defines whether the action should use the configured HTTP proxy to send requests.
 	// Stability: Long-term
 	UseProxy bool `json:"useProxy"`
+	// Labels to categorize the action.
+	// Stability: Preview
+	Labels []string `json:"labels"`
 }
 
 // GetId returns CreateWebhookActionCreateWebhookAction.Id, and is useful for accessing the field via an interface.
@@ -3526,6 +4490,9 @@ func (v *CreateWebhookActionCreateWebhookAction) GetIgnoreSSL() bool { return v.
 
 // GetUseProxy returns CreateWebhookActionCreateWebhookAction.UseProxy, and is useful for accessing the field via an interface.
 func (v *CreateWebhookActionCreateWebhookAction) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns CreateWebhookActionCreateWebhookAction.Labels, and is useful for accessing the field via an interface.
+func (v *CreateWebhookActionCreateWebhookAction) GetLabels() []string { return v.Labels }
 
 // CreateWebhookActionCreateWebhookActionHeadersHttpHeaderEntry includes the requested fields of the GraphQL type HttpHeaderEntry.
 // The GraphQL type's documentation follows.
@@ -3565,7 +4532,6 @@ func (v *CreateWebhookActionResponse) GetCreateWebhookAction() CreateWebhookActi
 // DeleteActionByIDResponse is returned by DeleteActionByID on success.
 type DeleteActionByIDResponse struct {
 	// Delete an action.
-	// Stability: Long-term
 	DeleteAction bool `json:"deleteAction"`
 }
 
@@ -3575,7 +4541,6 @@ func (v *DeleteActionByIDResponse) GetDeleteAction() bool { return v.DeleteActio
 // DeleteAggregateAlertResponse is returned by DeleteAggregateAlert on success.
 type DeleteAggregateAlertResponse struct {
 	// Delete an aggregate alert.
-	// Stability: Long-term
 	DeleteAggregateAlert bool `json:"deleteAggregateAlert"`
 }
 
@@ -3585,7 +4550,6 @@ func (v *DeleteAggregateAlertResponse) GetDeleteAggregateAlert() bool { return v
 // DeleteAlertResponse is returned by DeleteAlert on success.
 type DeleteAlertResponse struct {
 	// Delete an alert.
-	// Stability: Long-term
 	DeleteAlert bool `json:"deleteAlert"`
 }
 
@@ -3595,7 +4559,6 @@ func (v *DeleteAlertResponse) GetDeleteAlert() bool { return v.DeleteAlert }
 // DeleteFilterAlertResponse is returned by DeleteFilterAlert on success.
 type DeleteFilterAlertResponse struct {
 	// Delete a filter alert.
-	// Stability: Long-term
 	DeleteFilterAlert bool `json:"deleteFilterAlert"`
 }
 
@@ -3613,7 +4576,6 @@ func (v *DeleteParserByIDDeleteParserBooleanResultType) GetTypename() *string { 
 // DeleteParserByIDResponse is returned by DeleteParserByID on success.
 type DeleteParserByIDResponse struct {
 	// Delete a parser.
-	// Stability: Long-term
 	DeleteParser DeleteParserByIDDeleteParserBooleanResultType `json:"deleteParser"`
 }
 
@@ -3625,7 +4587,6 @@ func (v *DeleteParserByIDResponse) GetDeleteParser() DeleteParserByIDDeleteParse
 // DeleteScheduledSearchByIDResponse is returned by DeleteScheduledSearchByID on success.
 type DeleteScheduledSearchByIDResponse struct {
 	// Delete a scheduled search.
-	// Stability: Long-term
 	DeleteScheduledSearch bool `json:"deleteScheduledSearch"`
 }
 
@@ -3637,7 +4598,6 @@ func (v *DeleteScheduledSearchByIDResponse) GetDeleteScheduledSearch() bool {
 // DeleteScheduledSearchV2ByIDResponse is returned by DeleteScheduledSearchV2ByID on success.
 type DeleteScheduledSearchV2ByIDResponse struct {
 	// Delete a scheduled search.
-	// Stability: Long-term
 	DeleteScheduledSearch bool `json:"deleteScheduledSearch"`
 }
 
@@ -3790,9 +4750,6 @@ const (
 	// Enable repeating queries. Can be used instead of live queries for functions having limitations around live queries.
 	// Stability: Preview
 	FeatureFlagRepeatingqueries FeatureFlag = "RepeatingQueries"
-	// Enable custom ingest tokens not generated by LogScale.
-	// Stability: Preview
-	FeatureFlagCustomingesttokens FeatureFlag = "CustomIngestTokens"
 	// Use new organization limits.
 	// Stability: Preview
 	FeatureFlagNeworganizationlimits FeatureFlag = "NewOrganizationLimits"
@@ -3800,6 +4757,10 @@ const (
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagArrayfunctions FeatureFlag = "ArrayFunctions"
+	// Enable query profiling functions in the query language.
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagQueryprofiler FeatureFlag = "QueryProfiler"
 	// Enable geography functions in query language.
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
@@ -3842,74 +4803,64 @@ const (
 	// Enables ephemeral hosts support for fleet management
 	// Stability: Preview
 	FeatureFlagFleetephemeralhosts FeatureFlag = "FleetEphemeralHosts"
-	// Prevents the archiving logic from splitting segments into multiple archived files based on their tag groups
-	// Stability: Preview
-	FeatureFlagDontsplitsegmentsforarchiving FeatureFlag = "DontSplitSegmentsForArchiving"
 	// Enables fleet management collector metrics
 	// Stability: Preview
 	FeatureFlagFleetcollectormetrics FeatureFlag = "FleetCollectorMetrics"
-	// No currentHosts writes for segments in buckets
-	// Stability: Preview
-	FeatureFlagNocurrentsforbucketsegments FeatureFlag = "NoCurrentsForBucketSegments"
 	// Force a refresh of ClusterManagementStats cache before calculating UnregisterNodeBlockers in clusterUnregisterNode mutation
 	// Stability: Preview
 	FeatureFlagRefreshclustermanagementstatsinunregisternode FeatureFlag = "RefreshClusterManagementStatsInUnregisterNode"
-	// Pre-merge mini-segments
-	// Stability: Preview
-	FeatureFlagPremergeminisegments FeatureFlag = "PreMergeMiniSegments"
-	// Use new store for Autosharding rules
-	// Stability: Preview
-	FeatureFlagNewautoshardrulestore FeatureFlag = "NewAutoshardRuleStore"
 	// Use a new segment file format on write - not readable by older versions
 	// Stability: Preview
 	FeatureFlagWritenewsegmentfileformat FeatureFlag = "WriteNewSegmentFileFormat"
-	// When using the new segment file format on write, also do the old solely for comparison
-	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
-	// Stability: Preview
-	FeatureFlagMeasurenewsegmentfileformat FeatureFlag = "MeasureNewSegmentFileFormat"
 	// Enables fleet management collector debug logging
 	// Stability: Preview
 	FeatureFlagFleetcollectordebuglogging FeatureFlag = "FleetCollectorDebugLogging"
-	// Resolve field names during codegen rather than for every event
-	// Stability: Preview
-	FeatureFlagResolvefieldscodegen FeatureFlag = "ResolveFieldsCodeGen"
 	// Enables LogScale Collector remote updates
 	// Stability: Preview
 	FeatureFlagFleetremoteupdates FeatureFlag = "FleetRemoteUpdates"
-	// Enables alternate query merge target handling
-	// Stability: Preview
-	FeatureFlagAlternatequerymergetargethandling FeatureFlag = "AlternateQueryMergeTargetHandling"
-	// Allow digesters to start without having all the minis for the current merge target. Requires the AlternateQueryMergeTargetHandling feature flag to be enabled
-	// Stability: Preview
-	FeatureFlagDigestersdontneedmergetargetminis FeatureFlag = "DigestersDontNeedMergeTargetMinis"
 	// Enables labels for fleet management
-	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagFleetlabels FeatureFlag = "FleetLabels"
-	// Segment rebalancer handles mini segments. Can only take effect when the AlternateQueryMergeTargetHandling and DigestersDontNeedMergeTargetMinis feature flags are also enabled
-	// Stability: Preview
-	FeatureFlagSegmentrebalancerhandlesminis FeatureFlag = "SegmentRebalancerHandlesMinis"
 	// Enables dashboards on fleet overview page
-	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagFleetoverviewdashboards FeatureFlag = "FleetOverviewDashboards"
-	// Enables archiving for Google Cloud Storage
-	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Enables fleet management dashboards page
 	// Stability: Preview
-	FeatureFlagGooglecloudarchiving FeatureFlag = "GoogleCloudArchiving"
+	FeatureFlagFleetdashboardspage FeatureFlag = "FleetDashboardsPage"
 	// Enables TablePage UI on fleet management pages.
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagFleettablepageui FeatureFlag = "FleetTablePageUI"
-	// Disables periodic ingestOffset pushing for datasources in favor of alternate handling
+	// Enables migration of fleet metrics
 	// Stability: Preview
-	FeatureFlagReplaceperiodicingestoffsetpushing FeatureFlag = "ReplacePeriodicIngestOffsetPushing"
-	// Lets the cluster know that non-evicted nodes undergoing a graceful shutdown should be considered alive for 5 minutes with regards to segment rebalancing
+	FeatureFlagFleetmetricsmigration FeatureFlag = "FleetMetricsMigration"
+	// Enables cache for LC-update
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
-	FeatureFlagSetconsideredaliveuntilongracefulshutdown FeatureFlag = "SetConsideredAliveUntilOnGracefulShutdown"
-	// Enables Field Aliasing
+	FeatureFlagEnablelcupdatecache FeatureFlag = "EnableLcUpdateCache"
+	// Use collector ID instead of machine ID
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
-	FeatureFlagFieldaliasing FeatureFlag = "FieldAliasing"
+	FeatureFlagSwitchtocollectoridovermachineid FeatureFlag = "SwitchToCollectorIdOverMachineId"
+	// Enables a locking mechanism to prevent segment races
+	// Stability: Preview
+	FeatureFlagLockingmechanismforsegmentraces FeatureFlag = "LockingMechanismForSegmentRaces"
+	// Will add an additional header value to kafka messages containing derived tags
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagAddderivedtagstokafkaheaders FeatureFlag = "AddDerivedTagsToKafkaHeaders"
+	// Do not fetch segments upon digest startup
+	// Stability: Preview
+	FeatureFlagZerofetchdigest FeatureFlag = "ZeroFetchDigest"
+	// Use CrowdStrike Query Language Editor (CodeMirror 6) instead of Monaco for query editor
+	// Stability: Preview
+	FeatureFlagCrowdstrikequerylanguageeditor FeatureFlag = "CrowdStrikeQueryLanguageEditor"
+	// Enables complete state caching
+	// Stability: Preview
+	FeatureFlagEnablecompletestatecache FeatureFlag = "EnableCompleteStateCache"
+	// Enable periodically snapshotting state of live queries on workers
+	// Stability: Preview
+	FeatureFlagPeriodicallysnapshothistoricstate FeatureFlag = "PeriodicallySnapshotHistoricState"
 	// External Functions
 	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
 	// Stability: Preview
@@ -3922,20 +4873,17 @@ const (
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagFlightcontrol FeatureFlag = "FlightControl"
-	// Enables a limit on query backtracking
-	// Stability: Preview
-	FeatureFlagQuerybacktrackinglimit FeatureFlag = "QueryBacktrackingLimit"
 	// Adds a derived #repo.cid tag when searching in views or dataspaces within an organization with an associated CID
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagDerivedcidtag FeatureFlag = "DerivedCidTag"
-	// Live tables
-	// Stability: Preview
-	FeatureFlagLivetables FeatureFlag = "LiveTables"
 	// Enables graph queries
-	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagGraphqueries FeatureFlag = "GraphQueries"
+	// Enables aggregations for correlate
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagCorrelateaggregations FeatureFlag = "CorrelateAggregations"
 	// Enables the MITRE Detection Annotation function
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
@@ -3950,13 +4898,26 @@ const (
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagOnetomanygroupsynchronization FeatureFlag = "OneToManyGroupSynchronization"
-	// Enables support specifying the query time interval using the query function setTimeInterval()
-	// Stability: Preview
-	FeatureFlagTimeintervalinquery FeatureFlag = "TimeIntervalInQuery"
 	// Enables LLM parser generation
 	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
 	// Stability: Preview
 	FeatureFlagLlmparsergeneration FeatureFlag = "LlmParserGeneration"
+	// Enables enriched parsers and handling enrichment headers in the HEC endpointThis flag has higher precedence than TestOnlyForceEnableXEnrichment flags
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagEnrichedparsers FeatureFlag = "EnrichedParsers"
+	// TO BE USED IN TEST ENVIRONMENTS ONLY: Enables HostEnrichment for all requests to the HEC Ingest endpoint,regardless of whether it was included in requested enrichmentsThis flag has lower precedence than EnrichedParsers flag
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagTestonlyforceenablehostenrichment FeatureFlag = "TestOnlyForceEnableHostEnrichment"
+	// TO BE USED IN TEST ENVIRONMENTS ONLY: Enables MitreEnrichment for all requests to the HEC Ingest endpoint,regardless of whether it was included in requested enrichmentsThis flag has lower precedence than EnrichedParsers flag
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagTestonlyforceenablemitreenrichment FeatureFlag = "TestOnlyForceEnableMitreEnrichment"
+	// TO BE USED IN TEST ENVIRONMENTS ONLY: Enables UserEnrichment for all requests to the HEC Ingest endpoint,regardless of whether it was included in requested enrichmentsThis flag has lower precedence than EnrichedParsers flag
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagTestonlyforceenableuserenrichment FeatureFlag = "TestOnlyForceEnableUserEnrichment"
 	// Enables the external data source sync job to sync entity data
 	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
 	// Stability: Preview
@@ -3965,19 +4926,82 @@ const (
 	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
 	// Stability: Preview
 	FeatureFlagExternaldatasourcesyncforidentity FeatureFlag = "ExternalDataSourceSyncForIdentity"
-	// Use the new query coordination partition logic.
+	// Enables the external data source sync job to sync ip and hostname entity data
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
 	// Stability: Preview
-	FeatureFlagUsenewquerycoordinationpartitions FeatureFlag = "UseNewQueryCoordinationPartitions"
+	FeatureFlagExternaldatasourcesynchostsbyipandname FeatureFlag = "ExternalDataSourceSyncHostsByIpAndName"
 	// Use the new sort, head, tail, and table datastructure
 	// Stability: Preview
 	FeatureFlagSortnewdatastructure FeatureFlag = "SortNewDatastructure"
+	// Enable the new Bale format lookup file infrastructure
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagEnablebalelookupfileinfrastructure FeatureFlag = "EnableBaleLookupFileInfrastructure"
+	// Disable the old CSV/JSON format lookup file infrastructure
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagDisablecsvjsonlookupfileinfrastructure FeatureFlag = "DisableCsvJsonLookupFileInfrastructure"
+	// Enables integration with LogScale Assets Resolution Service (LARS)
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagLogscaleassetsresolutionservice FeatureFlag = "LogScaleAssetsResolutionService"
+	// Apply permission assignments from user info claim.
+	// Stability: Preview
+	FeatureFlagPermissionsclaimfromuserinfo FeatureFlag = "PermissionsClaimFromUserInfo"
+	// Always log which groups are in group claim when authenticating.
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagGroupclaimlogging FeatureFlag = "GroupClaimLogging"
+	// Attaches a header to Ingest Queue records to indicate that the message can be forwarded by Kafka Egress Service
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagKafkaegresseventforwardingenabled FeatureFlag = "KafkaEgressEventForwardingEnabled"
+	// Skips LogScale event forwarding for records that will instead be forwarded by Kafka Egress Service
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagLogscaleeventforwardingdisabled FeatureFlag = "LogScaleEventForwardingDisabled"
+	// Applies access scope from from JWT claim
+	// Stability: Preview
+	FeatureFlagJwtaccessscope FeatureFlag = "JWTAccessScope"
+	// Allows LogScale to fetch lookup tables from a remote source
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagRemotetable FeatureFlag = "RemoteTable"
+	// Enables enhanced schema validation for parsers. Enabling this may produce additional validation errors that were not previously observed
+	// Stability: Preview
+	FeatureFlagEnhancedschemavalidation FeatureFlag = "EnhancedSchemaValidation"
+	// Uses calculated, in-memory owner hosts for segments instead of storing this information in Global
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagUseinmemorysegmentownerhosts FeatureFlag = "UseInMemorySegmentOwnerHosts"
+	// Enables Bulk Actions feature for Asset Management Pages
+	// Stability: Preview
+	FeatureFlagBulkactions FeatureFlag = "BulkActions"
+	// Adds the #repo.cid tag, if it exists, as a kafka header when events are forwarded. This requires the DerivedCidTag to be enabled too.
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagCidheaderineventforwarderrecord FeatureFlag = "CidHeaderInEventForwarderRecord"
+	// Allow for falcon analysts to generate query explanations
+	// THIS FUNCTIONALITY IS RESTRICTED: Enabling this functionality should not be done in any production environment.
+	// Stability: Preview
+	FeatureFlagGeneratequeryexplanations FeatureFlag = "GenerateQueryExplanations"
+	// Keeps hash files for a segment instead of deleting them, so it can be reused for queries
+	// Stability: Preview
+	FeatureFlagKeepsegmenthashfiles FeatureFlag = "KeepSegmentHashFiles"
+	// Layout and design changes for the Search view component
+	// THIS FUNCTIONALITY IS EXPERIMENTAL: Enabling experimental functionality is strongly discouraged and can lead to LogScale ending up in a bad state beyond repair.
+	// Stability: Preview
+	FeatureFlagSearchviewdesignchanges FeatureFlag = "SearchViewDesignChanges"
+	// Switch to new queuing code for file transfers
+	// Stability: Preview
+	FeatureFlagNewfiletransferqueuing FeatureFlag = "NewFileTransferQueuing"
 )
 
 // Asserts that a given field has an expected value after having been parsed.
 type FieldHasValueInput struct {
-	// Asserts that a given field has an expected value after having been parsed.
+	// Field to assert on.
 	FieldName string `json:"fieldName"`
-	// Asserts that a given field has an expected value after having been parsed.
+	// Value expected to be contained in the field.
 	ExpectedValue string `json:"expectedValue"`
 }
 
@@ -4188,6 +5212,7 @@ func (v *FilterAlertDetails) __premarshalJSON() (*__premarshalFilterAlertDetails
 // FilterAlertDetailsActionsHumioRepoAction
 // FilterAlertDetailsActionsOpsGenieAction
 // FilterAlertDetailsActionsPagerDutyAction
+// FilterAlertDetailsActionsS3Action
 // FilterAlertDetailsActionsSlackAction
 // FilterAlertDetailsActionsSlackPostMessageAction
 // FilterAlertDetailsActionsUploadFileAction
@@ -4203,7 +5228,8 @@ type FilterAlertDetailsActionsAction interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	GetName() string
 }
 
@@ -4214,6 +5240,8 @@ func (v *FilterAlertDetailsActionsHumioRepoAction) implementsGraphQLInterfaceFil
 func (v *FilterAlertDetailsActionsOpsGenieAction) implementsGraphQLInterfaceFilterAlertDetailsActionsAction() {
 }
 func (v *FilterAlertDetailsActionsPagerDutyAction) implementsGraphQLInterfaceFilterAlertDetailsActionsAction() {
+}
+func (v *FilterAlertDetailsActionsS3Action) implementsGraphQLInterfaceFilterAlertDetailsActionsAction() {
 }
 func (v *FilterAlertDetailsActionsSlackAction) implementsGraphQLInterfaceFilterAlertDetailsActionsAction() {
 }
@@ -4251,6 +5279,9 @@ func __unmarshalFilterAlertDetailsActionsAction(b []byte, v *FilterAlertDetailsA
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(FilterAlertDetailsActionsPagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(FilterAlertDetailsActionsS3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(FilterAlertDetailsActionsSlackAction)
@@ -4312,6 +5343,14 @@ func __marshalFilterAlertDetailsActionsAction(v *FilterAlertDetailsActionsAction
 			*FilterAlertDetailsActionsPagerDutyAction
 		}{typename, v}
 		return json.Marshal(result)
+	case *FilterAlertDetailsActionsS3Action:
+		typename = "S3Action"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*FilterAlertDetailsActionsS3Action
+		}{typename, v}
+		return json.Marshal(result)
 	case *FilterAlertDetailsActionsSlackAction:
 		typename = "SlackAction"
 
@@ -4366,7 +5405,8 @@ func __marshalFilterAlertDetailsActionsAction(v *FilterAlertDetailsActionsAction
 // An email action.
 type FilterAlertDetailsActionsEmailAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4382,7 +5422,8 @@ func (v *FilterAlertDetailsActionsEmailAction) GetName() string { return v.Name 
 // A LogScale repository action.
 type FilterAlertDetailsActionsHumioRepoAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4398,7 +5439,8 @@ func (v *FilterAlertDetailsActionsHumioRepoAction) GetName() string { return v.N
 // An OpsGenie action
 type FilterAlertDetailsActionsOpsGenieAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4414,7 +5456,8 @@ func (v *FilterAlertDetailsActionsOpsGenieAction) GetName() string { return v.Na
 // A PagerDuty action.
 type FilterAlertDetailsActionsPagerDutyAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4424,13 +5467,31 @@ func (v *FilterAlertDetailsActionsPagerDutyAction) GetTypename() *string { retur
 // GetName returns FilterAlertDetailsActionsPagerDutyAction.Name, and is useful for accessing the field via an interface.
 func (v *FilterAlertDetailsActionsPagerDutyAction) GetName() string { return v.Name }
 
+// FilterAlertDetailsActionsS3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type FilterAlertDetailsActionsS3Action struct {
+	Typename *string `json:"__typename"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+}
+
+// GetTypename returns FilterAlertDetailsActionsS3Action.Typename, and is useful for accessing the field via an interface.
+func (v *FilterAlertDetailsActionsS3Action) GetTypename() *string { return v.Typename }
+
+// GetName returns FilterAlertDetailsActionsS3Action.Name, and is useful for accessing the field via an interface.
+func (v *FilterAlertDetailsActionsS3Action) GetName() string { return v.Name }
+
 // FilterAlertDetailsActionsSlackAction includes the requested fields of the GraphQL type SlackAction.
 // The GraphQL type's documentation follows.
 //
 // A Slack action
 type FilterAlertDetailsActionsSlackAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4446,7 +5507,8 @@ func (v *FilterAlertDetailsActionsSlackAction) GetName() string { return v.Name 
 // A slack post-message action.
 type FilterAlertDetailsActionsSlackPostMessageAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4462,7 +5524,8 @@ func (v *FilterAlertDetailsActionsSlackPostMessageAction) GetName() string { ret
 // An upload file action.
 type FilterAlertDetailsActionsUploadFileAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4478,7 +5541,8 @@ func (v *FilterAlertDetailsActionsUploadFileAction) GetName() string { return v.
 // A VictorOps action.
 type FilterAlertDetailsActionsVictorOpsAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4494,7 +5558,8 @@ func (v *FilterAlertDetailsActionsVictorOpsAction) GetName() string { return v.N
 // A webhook action
 type FilterAlertDetailsActionsWebhookAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -4591,7 +5656,8 @@ type GetActionByIDSearchDomain interface {
 	// GetAction returns the interface-field "action" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// A saved action.
+	// Stability: Long-term
 	GetAction() GetActionByIDSearchDomainAction
 }
 
@@ -4670,6 +5736,7 @@ func __marshalGetActionByIDSearchDomain(v *GetActionByIDSearchDomain) ([]byte, e
 // GetActionByIDSearchDomainActionHumioRepoAction
 // GetActionByIDSearchDomainActionOpsGenieAction
 // GetActionByIDSearchDomainActionPagerDutyAction
+// GetActionByIDSearchDomainActionS3Action
 // GetActionByIDSearchDomainActionSlackAction
 // GetActionByIDSearchDomainActionSlackPostMessageAction
 // GetActionByIDSearchDomainActionUploadFileAction
@@ -4692,6 +5759,8 @@ func (v *GetActionByIDSearchDomainActionHumioRepoAction) implementsGraphQLInterf
 func (v *GetActionByIDSearchDomainActionOpsGenieAction) implementsGraphQLInterfaceGetActionByIDSearchDomainAction() {
 }
 func (v *GetActionByIDSearchDomainActionPagerDutyAction) implementsGraphQLInterfaceGetActionByIDSearchDomainAction() {
+}
+func (v *GetActionByIDSearchDomainActionS3Action) implementsGraphQLInterfaceGetActionByIDSearchDomainAction() {
 }
 func (v *GetActionByIDSearchDomainActionSlackAction) implementsGraphQLInterfaceGetActionByIDSearchDomainAction() {
 }
@@ -4729,6 +5798,9 @@ func __unmarshalGetActionByIDSearchDomainAction(b []byte, v *GetActionByIDSearch
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(GetActionByIDSearchDomainActionPagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(GetActionByIDSearchDomainActionS3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(GetActionByIDSearchDomainActionSlackAction)
@@ -4804,6 +5876,18 @@ func __marshalGetActionByIDSearchDomainAction(v *GetActionByIDSearchDomainAction
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalGetActionByIDSearchDomainActionPagerDutyAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *GetActionByIDSearchDomainActionS3Action:
+		typename = "S3Action"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalGetActionByIDSearchDomainActionS3Action
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case *GetActionByIDSearchDomainActionSlackAction:
@@ -4916,6 +6000,11 @@ func (v *GetActionByIDSearchDomainActionEmailAction) GetUseProxy() bool {
 	return v.ActionDetailsEmailAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionEmailAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionEmailAction) GetLabels() []string {
+	return v.ActionDetailsEmailAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionEmailAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -4955,6 +6044,8 @@ type __premarshalGetActionByIDSearchDomainActionEmailAction struct {
 	EmailBodyTemplate *string `json:"emailBodyTemplate"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionEmailAction) MarshalJSON() ([]byte, error) {
@@ -4975,6 +6066,7 @@ func (v *GetActionByIDSearchDomainActionEmailAction) __premarshalJSON() (*__prem
 	retval.SubjectTemplate = v.ActionDetailsEmailAction.SubjectTemplate
 	retval.EmailBodyTemplate = v.ActionDetailsEmailAction.EmailBodyTemplate
 	retval.UseProxy = v.ActionDetailsEmailAction.UseProxy
+	retval.Labels = v.ActionDetailsEmailAction.Labels
 	return &retval, nil
 }
 
@@ -5003,6 +6095,11 @@ func (v *GetActionByIDSearchDomainActionHumioRepoAction) GetName() string {
 // GetIngestToken returns GetActionByIDSearchDomainActionHumioRepoAction.IngestToken, and is useful for accessing the field via an interface.
 func (v *GetActionByIDSearchDomainActionHumioRepoAction) GetIngestToken() string {
 	return v.ActionDetailsHumioRepoAction.IngestToken
+}
+
+// GetLabels returns GetActionByIDSearchDomainActionHumioRepoAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionHumioRepoAction) GetLabels() []string {
+	return v.ActionDetailsHumioRepoAction.Labels
 }
 
 func (v *GetActionByIDSearchDomainActionHumioRepoAction) UnmarshalJSON(b []byte) error {
@@ -5038,6 +6135,8 @@ type __premarshalGetActionByIDSearchDomainActionHumioRepoAction struct {
 	Name string `json:"name"`
 
 	IngestToken string `json:"ingestToken"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionHumioRepoAction) MarshalJSON() ([]byte, error) {
@@ -5055,6 +6154,7 @@ func (v *GetActionByIDSearchDomainActionHumioRepoAction) __premarshalJSON() (*__
 	retval.Id = v.ActionDetailsHumioRepoAction.Id
 	retval.Name = v.ActionDetailsHumioRepoAction.Name
 	retval.IngestToken = v.ActionDetailsHumioRepoAction.IngestToken
+	retval.Labels = v.ActionDetailsHumioRepoAction.Labels
 	return &retval, nil
 }
 
@@ -5095,6 +6195,11 @@ func (v *GetActionByIDSearchDomainActionOpsGenieAction) GetUseProxy() bool {
 	return v.ActionDetailsOpsGenieAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionOpsGenieAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionOpsGenieAction) GetLabels() []string {
+	return v.ActionDetailsOpsGenieAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionOpsGenieAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -5132,6 +6237,8 @@ type __premarshalGetActionByIDSearchDomainActionOpsGenieAction struct {
 	GenieKey string `json:"genieKey"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionOpsGenieAction) MarshalJSON() ([]byte, error) {
@@ -5151,6 +6258,7 @@ func (v *GetActionByIDSearchDomainActionOpsGenieAction) __premarshalJSON() (*__p
 	retval.ApiUrl = v.ActionDetailsOpsGenieAction.ApiUrl
 	retval.GenieKey = v.ActionDetailsOpsGenieAction.GenieKey
 	retval.UseProxy = v.ActionDetailsOpsGenieAction.UseProxy
+	retval.Labels = v.ActionDetailsOpsGenieAction.Labels
 	return &retval, nil
 }
 
@@ -5191,6 +6299,11 @@ func (v *GetActionByIDSearchDomainActionPagerDutyAction) GetUseProxy() bool {
 	return v.ActionDetailsPagerDutyAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionPagerDutyAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionPagerDutyAction) GetLabels() []string {
+	return v.ActionDetailsPagerDutyAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionPagerDutyAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -5228,6 +6341,8 @@ type __premarshalGetActionByIDSearchDomainActionPagerDutyAction struct {
 	RoutingKey string `json:"routingKey"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionPagerDutyAction) MarshalJSON() ([]byte, error) {
@@ -5247,6 +6362,141 @@ func (v *GetActionByIDSearchDomainActionPagerDutyAction) __premarshalJSON() (*__
 	retval.Severity = v.ActionDetailsPagerDutyAction.Severity
 	retval.RoutingKey = v.ActionDetailsPagerDutyAction.RoutingKey
 	retval.UseProxy = v.ActionDetailsPagerDutyAction.UseProxy
+	retval.Labels = v.ActionDetailsPagerDutyAction.Labels
+	return &retval, nil
+}
+
+// GetActionByIDSearchDomainActionS3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type GetActionByIDSearchDomainActionS3Action struct {
+	Typename              *string `json:"__typename"`
+	ActionDetailsS3Action `json:"-"`
+}
+
+// GetTypename returns GetActionByIDSearchDomainActionS3Action.Typename, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetTypename() *string { return v.Typename }
+
+// GetId returns GetActionByIDSearchDomainActionS3Action.Id, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetId() string { return v.ActionDetailsS3Action.Id }
+
+// GetName returns GetActionByIDSearchDomainActionS3Action.Name, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetName() string {
+	return v.ActionDetailsS3Action.Name
+}
+
+// GetRoleArn returns GetActionByIDSearchDomainActionS3Action.RoleArn, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetRoleArn() string {
+	return v.ActionDetailsS3Action.RoleArn
+}
+
+// GetAwsRegion returns GetActionByIDSearchDomainActionS3Action.AwsRegion, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetAwsRegion() string {
+	return v.ActionDetailsS3Action.AwsRegion
+}
+
+// GetBucketName returns GetActionByIDSearchDomainActionS3Action.BucketName, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetBucketName() string {
+	return v.ActionDetailsS3Action.BucketName
+}
+
+// GetFileName returns GetActionByIDSearchDomainActionS3Action.FileName, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetFileName() string {
+	return v.ActionDetailsS3Action.FileName
+}
+
+// GetOutputFormat returns GetActionByIDSearchDomainActionS3Action.OutputFormat, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetOutputFormat() S3ActionEventOutputFormat {
+	return v.ActionDetailsS3Action.OutputFormat
+}
+
+// GetOutputMetadata returns GetActionByIDSearchDomainActionS3Action.OutputMetadata, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetOutputMetadata() bool {
+	return v.ActionDetailsS3Action.OutputMetadata
+}
+
+// GetUseProxy returns GetActionByIDSearchDomainActionS3Action.UseProxy, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetUseProxy() bool {
+	return v.ActionDetailsS3Action.UseProxy
+}
+
+// GetLabels returns GetActionByIDSearchDomainActionS3Action.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionS3Action) GetLabels() []string {
+	return v.ActionDetailsS3Action.Labels
+}
+
+func (v *GetActionByIDSearchDomainActionS3Action) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetActionByIDSearchDomainActionS3Action
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetActionByIDSearchDomainActionS3Action = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsS3Action)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalGetActionByIDSearchDomainActionS3Action struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	RoleArn string `json:"roleArn"`
+
+	AwsRegion string `json:"awsRegion"`
+
+	BucketName string `json:"bucketName"`
+
+	FileName string `json:"fileName"`
+
+	OutputFormat S3ActionEventOutputFormat `json:"outputFormat"`
+
+	OutputMetadata bool `json:"outputMetadata"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *GetActionByIDSearchDomainActionS3Action) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetActionByIDSearchDomainActionS3Action) __premarshalJSON() (*__premarshalGetActionByIDSearchDomainActionS3Action, error) {
+	var retval __premarshalGetActionByIDSearchDomainActionS3Action
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsS3Action.Id
+	retval.Name = v.ActionDetailsS3Action.Name
+	retval.RoleArn = v.ActionDetailsS3Action.RoleArn
+	retval.AwsRegion = v.ActionDetailsS3Action.AwsRegion
+	retval.BucketName = v.ActionDetailsS3Action.BucketName
+	retval.FileName = v.ActionDetailsS3Action.FileName
+	retval.OutputFormat = v.ActionDetailsS3Action.OutputFormat
+	retval.OutputMetadata = v.ActionDetailsS3Action.OutputMetadata
+	retval.UseProxy = v.ActionDetailsS3Action.UseProxy
+	retval.Labels = v.ActionDetailsS3Action.Labels
 	return &retval, nil
 }
 
@@ -5287,6 +6537,11 @@ func (v *GetActionByIDSearchDomainActionSlackAction) GetUseProxy() bool {
 	return v.ActionDetailsSlackAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionSlackAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionSlackAction) GetLabels() []string {
+	return v.ActionDetailsSlackAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionSlackAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -5324,6 +6579,8 @@ type __premarshalGetActionByIDSearchDomainActionSlackAction struct {
 	Fields []ActionDetailsFieldsSlackFieldEntry `json:"fields"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionSlackAction) MarshalJSON() ([]byte, error) {
@@ -5343,6 +6600,7 @@ func (v *GetActionByIDSearchDomainActionSlackAction) __premarshalJSON() (*__prem
 	retval.Url = v.ActionDetailsSlackAction.Url
 	retval.Fields = v.ActionDetailsSlackAction.Fields
 	retval.UseProxy = v.ActionDetailsSlackAction.UseProxy
+	retval.Labels = v.ActionDetailsSlackAction.Labels
 	return &retval, nil
 }
 
@@ -5390,6 +6648,11 @@ func (v *GetActionByIDSearchDomainActionSlackPostMessageAction) GetUseProxy() bo
 	return v.ActionDetailsSlackPostMessageAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionSlackPostMessageAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionSlackPostMessageAction) GetLabels() []string {
+	return v.ActionDetailsSlackPostMessageAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionSlackPostMessageAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -5429,6 +6692,8 @@ type __premarshalGetActionByIDSearchDomainActionSlackPostMessageAction struct {
 	Fields []ActionDetailsFieldsSlackFieldEntry `json:"fields"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionSlackPostMessageAction) MarshalJSON() ([]byte, error) {
@@ -5449,6 +6714,7 @@ func (v *GetActionByIDSearchDomainActionSlackPostMessageAction) __premarshalJSON
 	retval.Channels = v.ActionDetailsSlackPostMessageAction.Channels
 	retval.Fields = v.ActionDetailsSlackPostMessageAction.Fields
 	retval.UseProxy = v.ActionDetailsSlackPostMessageAction.UseProxy
+	retval.Labels = v.ActionDetailsSlackPostMessageAction.Labels
 	return &retval, nil
 }
 
@@ -5477,6 +6743,11 @@ func (v *GetActionByIDSearchDomainActionUploadFileAction) GetName() string {
 // GetFileName returns GetActionByIDSearchDomainActionUploadFileAction.FileName, and is useful for accessing the field via an interface.
 func (v *GetActionByIDSearchDomainActionUploadFileAction) GetFileName() string {
 	return v.ActionDetailsUploadFileAction.FileName
+}
+
+// GetLabels returns GetActionByIDSearchDomainActionUploadFileAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionUploadFileAction) GetLabels() []string {
+	return v.ActionDetailsUploadFileAction.Labels
 }
 
 func (v *GetActionByIDSearchDomainActionUploadFileAction) UnmarshalJSON(b []byte) error {
@@ -5512,6 +6783,8 @@ type __premarshalGetActionByIDSearchDomainActionUploadFileAction struct {
 	Name string `json:"name"`
 
 	FileName string `json:"fileName"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionUploadFileAction) MarshalJSON() ([]byte, error) {
@@ -5529,6 +6802,7 @@ func (v *GetActionByIDSearchDomainActionUploadFileAction) __premarshalJSON() (*_
 	retval.Id = v.ActionDetailsUploadFileAction.Id
 	retval.Name = v.ActionDetailsUploadFileAction.Name
 	retval.FileName = v.ActionDetailsUploadFileAction.FileName
+	retval.Labels = v.ActionDetailsUploadFileAction.Labels
 	return &retval, nil
 }
 
@@ -5569,6 +6843,11 @@ func (v *GetActionByIDSearchDomainActionVictorOpsAction) GetUseProxy() bool {
 	return v.ActionDetailsVictorOpsAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionVictorOpsAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionVictorOpsAction) GetLabels() []string {
+	return v.ActionDetailsVictorOpsAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionVictorOpsAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -5606,6 +6885,8 @@ type __premarshalGetActionByIDSearchDomainActionVictorOpsAction struct {
 	NotifyUrl string `json:"notifyUrl"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionVictorOpsAction) MarshalJSON() ([]byte, error) {
@@ -5625,6 +6906,7 @@ func (v *GetActionByIDSearchDomainActionVictorOpsAction) __premarshalJSON() (*__
 	retval.MessageType = v.ActionDetailsVictorOpsAction.MessageType
 	retval.NotifyUrl = v.ActionDetailsVictorOpsAction.NotifyUrl
 	retval.UseProxy = v.ActionDetailsVictorOpsAction.UseProxy
+	retval.Labels = v.ActionDetailsVictorOpsAction.Labels
 	return &retval, nil
 }
 
@@ -5680,6 +6962,11 @@ func (v *GetActionByIDSearchDomainActionWebhookAction) GetUseProxy() bool {
 	return v.ActionDetailsWebhookAction.UseProxy
 }
 
+// GetLabels returns GetActionByIDSearchDomainActionWebhookAction.Labels, and is useful for accessing the field via an interface.
+func (v *GetActionByIDSearchDomainActionWebhookAction) GetLabels() []string {
+	return v.ActionDetailsWebhookAction.Labels
+}
+
 func (v *GetActionByIDSearchDomainActionWebhookAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -5723,6 +7010,8 @@ type __premarshalGetActionByIDSearchDomainActionWebhookAction struct {
 	IgnoreSSL bool `json:"ignoreSSL"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *GetActionByIDSearchDomainActionWebhookAction) MarshalJSON() ([]byte, error) {
@@ -5745,6 +7034,7 @@ func (v *GetActionByIDSearchDomainActionWebhookAction) __premarshalJSON() (*__pr
 	retval.WebhookBodyTemplate = v.ActionDetailsWebhookAction.WebhookBodyTemplate
 	retval.IgnoreSSL = v.ActionDetailsWebhookAction.IgnoreSSL
 	retval.UseProxy = v.ActionDetailsWebhookAction.UseProxy
+	retval.Labels = v.ActionDetailsWebhookAction.Labels
 	return &retval, nil
 }
 
@@ -5754,7 +7044,8 @@ func (v *GetActionByIDSearchDomainActionWebhookAction) __premarshalJSON() (*__pr
 // A repository stores ingested data, configures parsers and data retention policies.
 type GetActionByIDSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A saved action.
+	// Stability: Long-term
 	Action GetActionByIDSearchDomainAction `json:"-"`
 }
 
@@ -5838,7 +7129,8 @@ func (v *GetActionByIDSearchDomainRepository) __premarshalJSON() (*__premarshalG
 // Represents information about a view, pulling data from one or several repositories.
 type GetActionByIDSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A saved action.
+	// Stability: Long-term
 	Action GetActionByIDSearchDomainAction `json:"-"`
 }
 
@@ -6003,7 +7295,8 @@ type GetAggregateAlertByIDSearchDomain interface {
 	// GetAggregateAlert returns the interface-field "aggregateAlert" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// A saved aggregate alert
+	// Stability: Long-term
 	GetAggregateAlert() GetAggregateAlertByIDSearchDomainAggregateAlert
 }
 
@@ -6256,7 +7549,8 @@ func (v *GetAggregateAlertByIDSearchDomainAggregateAlert) __premarshalJSON() (*_
 // A repository stores ingested data, configures parsers and data retention policies.
 type GetAggregateAlertByIDSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A saved aggregate alert
+	// Stability: Long-term
 	AggregateAlert GetAggregateAlertByIDSearchDomainAggregateAlert `json:"aggregateAlert"`
 }
 
@@ -6274,7 +7568,8 @@ func (v *GetAggregateAlertByIDSearchDomainRepository) GetAggregateAlert() GetAgg
 // Represents information about a view, pulling data from one or several repositories.
 type GetAggregateAlertByIDSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A saved aggregate alert
+	// Stability: Long-term
 	AggregateAlert GetAggregateAlertByIDSearchDomainAggregateAlert `json:"aggregateAlert"`
 }
 
@@ -6552,7 +7847,8 @@ type GetFilterAlertByIDSearchDomain interface {
 	// GetFilterAlert returns the interface-field "filterAlert" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// A saved filter alert
+	// Stability: Long-term
 	GetFilterAlert() GetFilterAlertByIDSearchDomainFilterAlert
 }
 
@@ -6779,7 +8075,8 @@ func (v *GetFilterAlertByIDSearchDomainFilterAlert) __premarshalJSON() (*__prema
 // A repository stores ingested data, configures parsers and data retention policies.
 type GetFilterAlertByIDSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A saved filter alert
+	// Stability: Long-term
 	FilterAlert GetFilterAlertByIDSearchDomainFilterAlert `json:"filterAlert"`
 }
 
@@ -6797,7 +8094,8 @@ func (v *GetFilterAlertByIDSearchDomainRepository) GetFilterAlert() GetFilterAle
 // Represents information about a view, pulling data from one or several repositories.
 type GetFilterAlertByIDSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A saved filter alert
+	// Stability: Long-term
 	FilterAlert GetFilterAlertByIDSearchDomainFilterAlert `json:"filterAlert"`
 }
 
@@ -6824,12 +8122,14 @@ type GetLicenseInstalledLicense interface {
 	// GetExpiresAt returns the interface-field "expiresAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Represents information about the LogScale instance.
+	// The time at which the license expires.
+	// Stability: Long-term
 	GetExpiresAt() time.Time
 	// GetIssuedAt returns the interface-field "issuedAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Represents information about the LogScale instance.
+	// The time at which the license was issued.
+	// Stability: Long-term
 	GetIssuedAt() time.Time
 }
 
@@ -6901,9 +8201,11 @@ func __marshalGetLicenseInstalledLicense(v *GetLicenseInstalledLicense) ([]byte,
 // Represents information about a LogScale License.
 type GetLicenseInstalledLicenseOnPremLicense struct {
 	Typename *string `json:"__typename"`
-	// Represents information about the LogScale instance.
+	// The time at which the license expires.
+	// Stability: Long-term
 	ExpiresAt time.Time `json:"expiresAt"`
-	// Represents information about the LogScale instance.
+	// The time at which the license was issued.
+	// Stability: Long-term
 	IssuedAt time.Time `json:"issuedAt"`
 	// license id.
 	// Stability: Long-term
@@ -6940,9 +8242,11 @@ func (v *GetLicenseInstalledLicenseOnPremLicense) GetMaxUsers() *int { return v.
 // Represents information about an on-going trial of LogScale.
 type GetLicenseInstalledLicenseTrialLicense struct {
 	Typename *string `json:"__typename"`
-	// Represents information about the LogScale instance.
+	// The time at which the license expires.
+	// Stability: Long-term
 	ExpiresAt time.Time `json:"expiresAt"`
-	// Represents information about the LogScale instance.
+	// The time at which the license was issued.
+	// Stability: Long-term
 	IssuedAt time.Time `json:"issuedAt"`
 }
 
@@ -7038,7 +8342,7 @@ func (v *GetLicenseResponse) __premarshalJSON() (*__premarshalGetLicenseResponse
 //
 // A repository stores ingested data, configures parsers and data retention policies.
 type GetParserByIDRepository struct {
-	// A parser on the repository.
+	// A parser on the repository. Supply either 'id' or 'name'.
 	// Stability: Long-term
 	Parser *GetParserByIDRepositoryParser `json:"parser"`
 }
@@ -7168,7 +8472,7 @@ func (v *GetParserByIDResponse) GetRepository() GetParserByIDRepository { return
 //
 // A repository stores ingested data, configures parsers and data retention policies.
 type GetParserYAMLByNameRepository struct {
-	// A parser on the repository.
+	// A parser on the repository. Supply either 'id' or 'name'.
 	// Stability: Long-term
 	Parser *GetParserYAMLByNameRepositoryParser `json:"parser"`
 }
@@ -7511,22 +8815,22 @@ type GetSearchDomainSearchDomain interface {
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetId() string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetName() string
 	// GetDescription returns the interface-field "description" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetDescription() *string
 	// GetAutomaticSearch returns the interface-field "automaticSearch" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetAutomaticSearch() bool
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() *string
@@ -7598,13 +8902,13 @@ func __marshalGetSearchDomainSearchDomain(v *GetSearchDomainSearchDomain) ([]byt
 //
 // A repository stores ingested data, configures parsers and data retention policies.
 type GetSearchDomainSearchDomainRepository struct {
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Name string `json:"name"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Description *string `json:"description"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	AutomaticSearch bool    `json:"automaticSearch"`
 	Typename        *string `json:"__typename"`
 }
@@ -7629,13 +8933,13 @@ func (v *GetSearchDomainSearchDomainRepository) GetTypename() *string { return v
 //
 // Represents information about a view, pulling data from one or several repositories.
 type GetSearchDomainSearchDomainView struct {
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Id string `json:"id"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Name string `json:"name"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Description *string `json:"description"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	AutomaticSearch bool `json:"automaticSearch"`
 	// Stability: Long-term
 	Connections []GetSearchDomainSearchDomainViewConnectionsViewConnection `json:"connections"`
@@ -7874,9 +9178,9 @@ func (v *GetUsersByUsernameUsersUser) __premarshalJSON() (*__premarshalGetUsersB
 
 // Http(s) Header entry.
 type HttpHeaderEntryInput struct {
-	// Http(s) Header entry.
+	// Key of a http(s) header.
 	Header string `json:"header"`
-	// Http(s) Header entry.
+	// Value of a http(s) header.
 	Value string `json:"value"`
 }
 
@@ -7931,227 +9235,6 @@ const (
 	LanguageVersionEnumFilteralert LanguageVersionEnum = "filteralert"
 	LanguageVersionEnumFederated1  LanguageVersionEnum = "federated1"
 )
-
-// LegacyCreateParserCreateParserCreateParserMutation includes the requested fields of the GraphQL type CreateParserMutation.
-type LegacyCreateParserCreateParserCreateParserMutation struct {
-	// Stability: Long-term
-	Parser LegacyCreateParserCreateParserCreateParserMutationParser `json:"parser"`
-}
-
-// GetParser returns LegacyCreateParserCreateParserCreateParserMutation.Parser, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutation) GetParser() LegacyCreateParserCreateParserCreateParserMutationParser {
-	return v.Parser
-}
-
-// LegacyCreateParserCreateParserCreateParserMutationParser includes the requested fields of the GraphQL type Parser.
-// The GraphQL type's documentation follows.
-//
-// A configured parser for incoming data.
-type LegacyCreateParserCreateParserCreateParserMutationParser struct {
-	ParserDetails `json:"-"`
-}
-
-// GetId returns LegacyCreateParserCreateParserCreateParserMutationParser.Id, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetId() string {
-	return v.ParserDetails.Id
-}
-
-// GetName returns LegacyCreateParserCreateParserCreateParserMutationParser.Name, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetName() string {
-	return v.ParserDetails.Name
-}
-
-// GetDisplayName returns LegacyCreateParserCreateParserCreateParserMutationParser.DisplayName, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetDisplayName() string {
-	return v.ParserDetails.DisplayName
-}
-
-// GetDescription returns LegacyCreateParserCreateParserCreateParserMutationParser.Description, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetDescription() *string {
-	return v.ParserDetails.Description
-}
-
-// GetIsBuiltIn returns LegacyCreateParserCreateParserCreateParserMutationParser.IsBuiltIn, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetIsBuiltIn() bool {
-	return v.ParserDetails.IsBuiltIn
-}
-
-// GetScript returns LegacyCreateParserCreateParserCreateParserMutationParser.Script, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetScript() string {
-	return v.ParserDetails.Script
-}
-
-// GetFieldsToTag returns LegacyCreateParserCreateParserCreateParserMutationParser.FieldsToTag, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetFieldsToTag() []string {
-	return v.ParserDetails.FieldsToTag
-}
-
-// GetFieldsToBeRemovedBeforeParsing returns LegacyCreateParserCreateParserCreateParserMutationParser.FieldsToBeRemovedBeforeParsing, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetFieldsToBeRemovedBeforeParsing() []string {
-	return v.ParserDetails.FieldsToBeRemovedBeforeParsing
-}
-
-// GetTestCases returns LegacyCreateParserCreateParserCreateParserMutationParser.TestCases, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) GetTestCases() []ParserDetailsTestCasesParserTestCase {
-	return v.ParserDetails.TestCases
-}
-
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*LegacyCreateParserCreateParserCreateParserMutationParser
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.LegacyCreateParserCreateParserCreateParserMutationParser = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.ParserDetails)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalLegacyCreateParserCreateParserCreateParserMutationParser struct {
-	Id string `json:"id"`
-
-	Name string `json:"name"`
-
-	DisplayName string `json:"displayName"`
-
-	Description *string `json:"description"`
-
-	IsBuiltIn bool `json:"isBuiltIn"`
-
-	Script string `json:"script"`
-
-	FieldsToTag []string `json:"fieldsToTag"`
-
-	FieldsToBeRemovedBeforeParsing []string `json:"fieldsToBeRemovedBeforeParsing"`
-
-	TestCases []ParserDetailsTestCasesParserTestCase `json:"testCases"`
-}
-
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *LegacyCreateParserCreateParserCreateParserMutationParser) __premarshalJSON() (*__premarshalLegacyCreateParserCreateParserCreateParserMutationParser, error) {
-	var retval __premarshalLegacyCreateParserCreateParserCreateParserMutationParser
-
-	retval.Id = v.ParserDetails.Id
-	retval.Name = v.ParserDetails.Name
-	retval.DisplayName = v.ParserDetails.DisplayName
-	retval.Description = v.ParserDetails.Description
-	retval.IsBuiltIn = v.ParserDetails.IsBuiltIn
-	retval.Script = v.ParserDetails.Script
-	retval.FieldsToTag = v.ParserDetails.FieldsToTag
-	retval.FieldsToBeRemovedBeforeParsing = v.ParserDetails.FieldsToBeRemovedBeforeParsing
-	retval.TestCases = v.ParserDetails.TestCases
-	return &retval, nil
-}
-
-// LegacyCreateParserResponse is returned by LegacyCreateParser on success.
-type LegacyCreateParserResponse struct {
-	// Create a parser.
-	CreateParser LegacyCreateParserCreateParserCreateParserMutation `json:"createParser"`
-}
-
-// GetCreateParser returns LegacyCreateParserResponse.CreateParser, and is useful for accessing the field via an interface.
-func (v *LegacyCreateParserResponse) GetCreateParser() LegacyCreateParserCreateParserCreateParserMutation {
-	return v.CreateParser
-}
-
-// LegacyDeleteParserByIDRemoveParserRemoveParserMutation includes the requested fields of the GraphQL type RemoveParserMutation.
-type LegacyDeleteParserByIDRemoveParserRemoveParserMutation struct {
-	Typename *string `json:"__typename"`
-}
-
-// GetTypename returns LegacyDeleteParserByIDRemoveParserRemoveParserMutation.Typename, and is useful for accessing the field via an interface.
-func (v *LegacyDeleteParserByIDRemoveParserRemoveParserMutation) GetTypename() *string {
-	return v.Typename
-}
-
-// LegacyDeleteParserByIDResponse is returned by LegacyDeleteParserByID on success.
-type LegacyDeleteParserByIDResponse struct {
-	// Remove a parser.
-	RemoveParser LegacyDeleteParserByIDRemoveParserRemoveParserMutation `json:"removeParser"`
-}
-
-// GetRemoveParser returns LegacyDeleteParserByIDResponse.RemoveParser, and is useful for accessing the field via an interface.
-func (v *LegacyDeleteParserByIDResponse) GetRemoveParser() LegacyDeleteParserByIDRemoveParserRemoveParserMutation {
-	return v.RemoveParser
-}
-
-// LegacyGetParserRepository includes the requested fields of the GraphQL type Repository.
-// The GraphQL type's documentation follows.
-//
-// A repository stores ingested data, configures parsers and data retention policies.
-type LegacyGetParserRepository struct {
-	// A parser on the repository.
-	// Stability: Long-term
-	Parser *LegacyGetParserRepositoryParser `json:"parser"`
-}
-
-// GetParser returns LegacyGetParserRepository.Parser, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserRepository) GetParser() *LegacyGetParserRepositoryParser { return v.Parser }
-
-// LegacyGetParserRepositoryParser includes the requested fields of the GraphQL type Parser.
-// The GraphQL type's documentation follows.
-//
-// A configured parser for incoming data.
-type LegacyGetParserRepositoryParser struct {
-	// The id of the parser.
-	// Stability: Long-term
-	Id string `json:"id"`
-	// Name of the parser.
-	// Stability: Long-term
-	Name string `json:"name"`
-	// The source code of the parser.
-	SourceCode string `json:"sourceCode"`
-	// Saved test data (e.g. log lines) that you can use to test the parser.
-	TestData []string `json:"testData"`
-	// The fields to use as tags.
-	TagFields []string `json:"tagFields"`
-}
-
-// GetId returns LegacyGetParserRepositoryParser.Id, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserRepositoryParser) GetId() string { return v.Id }
-
-// GetName returns LegacyGetParserRepositoryParser.Name, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserRepositoryParser) GetName() string { return v.Name }
-
-// GetSourceCode returns LegacyGetParserRepositoryParser.SourceCode, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserRepositoryParser) GetSourceCode() string { return v.SourceCode }
-
-// GetTestData returns LegacyGetParserRepositoryParser.TestData, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserRepositoryParser) GetTestData() []string { return v.TestData }
-
-// GetTagFields returns LegacyGetParserRepositoryParser.TagFields, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserRepositoryParser) GetTagFields() []string { return v.TagFields }
-
-// LegacyGetParserResponse is returned by LegacyGetParser on success.
-type LegacyGetParserResponse struct {
-	// Lookup a given repository by name.
-	// Stability: Long-term
-	Repository LegacyGetParserRepository `json:"repository"`
-}
-
-// GetRepository returns LegacyGetParserResponse.Repository, and is useful for accessing the field via an interface.
-func (v *LegacyGetParserResponse) GetRepository() LegacyGetParserRepository { return v.Repository }
 
 // ListActionsResponse is returned by ListActions on success.
 type ListActionsResponse struct {
@@ -8240,7 +9323,8 @@ type ListActionsSearchDomain interface {
 	// GetActions returns the interface-field "actions" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// A list of saved actions.
+	// Stability: Long-term
 	GetActions() []ListActionsSearchDomainActionsAction
 }
 
@@ -8319,6 +9403,7 @@ func __marshalListActionsSearchDomain(v *ListActionsSearchDomain) ([]byte, error
 // ListActionsSearchDomainActionsHumioRepoAction
 // ListActionsSearchDomainActionsOpsGenieAction
 // ListActionsSearchDomainActionsPagerDutyAction
+// ListActionsSearchDomainActionsS3Action
 // ListActionsSearchDomainActionsSlackAction
 // ListActionsSearchDomainActionsSlackPostMessageAction
 // ListActionsSearchDomainActionsUploadFileAction
@@ -8341,6 +9426,8 @@ func (v *ListActionsSearchDomainActionsHumioRepoAction) implementsGraphQLInterfa
 func (v *ListActionsSearchDomainActionsOpsGenieAction) implementsGraphQLInterfaceListActionsSearchDomainActionsAction() {
 }
 func (v *ListActionsSearchDomainActionsPagerDutyAction) implementsGraphQLInterfaceListActionsSearchDomainActionsAction() {
+}
+func (v *ListActionsSearchDomainActionsS3Action) implementsGraphQLInterfaceListActionsSearchDomainActionsAction() {
 }
 func (v *ListActionsSearchDomainActionsSlackAction) implementsGraphQLInterfaceListActionsSearchDomainActionsAction() {
 }
@@ -8378,6 +9465,9 @@ func __unmarshalListActionsSearchDomainActionsAction(b []byte, v *ListActionsSea
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(ListActionsSearchDomainActionsPagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(ListActionsSearchDomainActionsS3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(ListActionsSearchDomainActionsSlackAction)
@@ -8453,6 +9543,18 @@ func __marshalListActionsSearchDomainActionsAction(v *ListActionsSearchDomainAct
 		result := struct {
 			TypeName string `json:"__typename"`
 			*__premarshalListActionsSearchDomainActionsPagerDutyAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsSearchDomainActionsS3Action:
+		typename = "S3Action"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsSearchDomainActionsS3Action
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case *ListActionsSearchDomainActionsSlackAction:
@@ -8565,6 +9667,11 @@ func (v *ListActionsSearchDomainActionsEmailAction) GetUseProxy() bool {
 	return v.ActionDetailsEmailAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsEmailAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsEmailAction) GetLabels() []string {
+	return v.ActionDetailsEmailAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsEmailAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8604,6 +9711,8 @@ type __premarshalListActionsSearchDomainActionsEmailAction struct {
 	EmailBodyTemplate *string `json:"emailBodyTemplate"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsEmailAction) MarshalJSON() ([]byte, error) {
@@ -8624,6 +9733,7 @@ func (v *ListActionsSearchDomainActionsEmailAction) __premarshalJSON() (*__prema
 	retval.SubjectTemplate = v.ActionDetailsEmailAction.SubjectTemplate
 	retval.EmailBodyTemplate = v.ActionDetailsEmailAction.EmailBodyTemplate
 	retval.UseProxy = v.ActionDetailsEmailAction.UseProxy
+	retval.Labels = v.ActionDetailsEmailAction.Labels
 	return &retval, nil
 }
 
@@ -8652,6 +9762,11 @@ func (v *ListActionsSearchDomainActionsHumioRepoAction) GetName() string {
 // GetIngestToken returns ListActionsSearchDomainActionsHumioRepoAction.IngestToken, and is useful for accessing the field via an interface.
 func (v *ListActionsSearchDomainActionsHumioRepoAction) GetIngestToken() string {
 	return v.ActionDetailsHumioRepoAction.IngestToken
+}
+
+// GetLabels returns ListActionsSearchDomainActionsHumioRepoAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsHumioRepoAction) GetLabels() []string {
+	return v.ActionDetailsHumioRepoAction.Labels
 }
 
 func (v *ListActionsSearchDomainActionsHumioRepoAction) UnmarshalJSON(b []byte) error {
@@ -8687,6 +9802,8 @@ type __premarshalListActionsSearchDomainActionsHumioRepoAction struct {
 	Name string `json:"name"`
 
 	IngestToken string `json:"ingestToken"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsHumioRepoAction) MarshalJSON() ([]byte, error) {
@@ -8704,6 +9821,7 @@ func (v *ListActionsSearchDomainActionsHumioRepoAction) __premarshalJSON() (*__p
 	retval.Id = v.ActionDetailsHumioRepoAction.Id
 	retval.Name = v.ActionDetailsHumioRepoAction.Name
 	retval.IngestToken = v.ActionDetailsHumioRepoAction.IngestToken
+	retval.Labels = v.ActionDetailsHumioRepoAction.Labels
 	return &retval, nil
 }
 
@@ -8744,6 +9862,11 @@ func (v *ListActionsSearchDomainActionsOpsGenieAction) GetUseProxy() bool {
 	return v.ActionDetailsOpsGenieAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsOpsGenieAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsOpsGenieAction) GetLabels() []string {
+	return v.ActionDetailsOpsGenieAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsOpsGenieAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8781,6 +9904,8 @@ type __premarshalListActionsSearchDomainActionsOpsGenieAction struct {
 	GenieKey string `json:"genieKey"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsOpsGenieAction) MarshalJSON() ([]byte, error) {
@@ -8800,6 +9925,7 @@ func (v *ListActionsSearchDomainActionsOpsGenieAction) __premarshalJSON() (*__pr
 	retval.ApiUrl = v.ActionDetailsOpsGenieAction.ApiUrl
 	retval.GenieKey = v.ActionDetailsOpsGenieAction.GenieKey
 	retval.UseProxy = v.ActionDetailsOpsGenieAction.UseProxy
+	retval.Labels = v.ActionDetailsOpsGenieAction.Labels
 	return &retval, nil
 }
 
@@ -8840,6 +9966,11 @@ func (v *ListActionsSearchDomainActionsPagerDutyAction) GetUseProxy() bool {
 	return v.ActionDetailsPagerDutyAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsPagerDutyAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsPagerDutyAction) GetLabels() []string {
+	return v.ActionDetailsPagerDutyAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsPagerDutyAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8877,6 +10008,8 @@ type __premarshalListActionsSearchDomainActionsPagerDutyAction struct {
 	RoutingKey string `json:"routingKey"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsPagerDutyAction) MarshalJSON() ([]byte, error) {
@@ -8896,6 +10029,141 @@ func (v *ListActionsSearchDomainActionsPagerDutyAction) __premarshalJSON() (*__p
 	retval.Severity = v.ActionDetailsPagerDutyAction.Severity
 	retval.RoutingKey = v.ActionDetailsPagerDutyAction.RoutingKey
 	retval.UseProxy = v.ActionDetailsPagerDutyAction.UseProxy
+	retval.Labels = v.ActionDetailsPagerDutyAction.Labels
+	return &retval, nil
+}
+
+// ListActionsSearchDomainActionsS3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type ListActionsSearchDomainActionsS3Action struct {
+	Typename              *string `json:"__typename"`
+	ActionDetailsS3Action `json:"-"`
+}
+
+// GetTypename returns ListActionsSearchDomainActionsS3Action.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetTypename() *string { return v.Typename }
+
+// GetId returns ListActionsSearchDomainActionsS3Action.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetId() string { return v.ActionDetailsS3Action.Id }
+
+// GetName returns ListActionsSearchDomainActionsS3Action.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetName() string {
+	return v.ActionDetailsS3Action.Name
+}
+
+// GetRoleArn returns ListActionsSearchDomainActionsS3Action.RoleArn, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetRoleArn() string {
+	return v.ActionDetailsS3Action.RoleArn
+}
+
+// GetAwsRegion returns ListActionsSearchDomainActionsS3Action.AwsRegion, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetAwsRegion() string {
+	return v.ActionDetailsS3Action.AwsRegion
+}
+
+// GetBucketName returns ListActionsSearchDomainActionsS3Action.BucketName, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetBucketName() string {
+	return v.ActionDetailsS3Action.BucketName
+}
+
+// GetFileName returns ListActionsSearchDomainActionsS3Action.FileName, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetFileName() string {
+	return v.ActionDetailsS3Action.FileName
+}
+
+// GetOutputFormat returns ListActionsSearchDomainActionsS3Action.OutputFormat, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetOutputFormat() S3ActionEventOutputFormat {
+	return v.ActionDetailsS3Action.OutputFormat
+}
+
+// GetOutputMetadata returns ListActionsSearchDomainActionsS3Action.OutputMetadata, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetOutputMetadata() bool {
+	return v.ActionDetailsS3Action.OutputMetadata
+}
+
+// GetUseProxy returns ListActionsSearchDomainActionsS3Action.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetUseProxy() bool {
+	return v.ActionDetailsS3Action.UseProxy
+}
+
+// GetLabels returns ListActionsSearchDomainActionsS3Action.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsS3Action) GetLabels() []string {
+	return v.ActionDetailsS3Action.Labels
+}
+
+func (v *ListActionsSearchDomainActionsS3Action) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsSearchDomainActionsS3Action
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsSearchDomainActionsS3Action = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsS3Action)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsSearchDomainActionsS3Action struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	RoleArn string `json:"roleArn"`
+
+	AwsRegion string `json:"awsRegion"`
+
+	BucketName string `json:"bucketName"`
+
+	FileName string `json:"fileName"`
+
+	OutputFormat S3ActionEventOutputFormat `json:"outputFormat"`
+
+	OutputMetadata bool `json:"outputMetadata"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsSearchDomainActionsS3Action) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsSearchDomainActionsS3Action) __premarshalJSON() (*__premarshalListActionsSearchDomainActionsS3Action, error) {
+	var retval __premarshalListActionsSearchDomainActionsS3Action
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsS3Action.Id
+	retval.Name = v.ActionDetailsS3Action.Name
+	retval.RoleArn = v.ActionDetailsS3Action.RoleArn
+	retval.AwsRegion = v.ActionDetailsS3Action.AwsRegion
+	retval.BucketName = v.ActionDetailsS3Action.BucketName
+	retval.FileName = v.ActionDetailsS3Action.FileName
+	retval.OutputFormat = v.ActionDetailsS3Action.OutputFormat
+	retval.OutputMetadata = v.ActionDetailsS3Action.OutputMetadata
+	retval.UseProxy = v.ActionDetailsS3Action.UseProxy
+	retval.Labels = v.ActionDetailsS3Action.Labels
 	return &retval, nil
 }
 
@@ -8936,6 +10204,11 @@ func (v *ListActionsSearchDomainActionsSlackAction) GetUseProxy() bool {
 	return v.ActionDetailsSlackAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsSlackAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsSlackAction) GetLabels() []string {
+	return v.ActionDetailsSlackAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsSlackAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -8973,6 +10246,8 @@ type __premarshalListActionsSearchDomainActionsSlackAction struct {
 	Fields []ActionDetailsFieldsSlackFieldEntry `json:"fields"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsSlackAction) MarshalJSON() ([]byte, error) {
@@ -8992,6 +10267,7 @@ func (v *ListActionsSearchDomainActionsSlackAction) __premarshalJSON() (*__prema
 	retval.Url = v.ActionDetailsSlackAction.Url
 	retval.Fields = v.ActionDetailsSlackAction.Fields
 	retval.UseProxy = v.ActionDetailsSlackAction.UseProxy
+	retval.Labels = v.ActionDetailsSlackAction.Labels
 	return &retval, nil
 }
 
@@ -9039,6 +10315,11 @@ func (v *ListActionsSearchDomainActionsSlackPostMessageAction) GetUseProxy() boo
 	return v.ActionDetailsSlackPostMessageAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsSlackPostMessageAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsSlackPostMessageAction) GetLabels() []string {
+	return v.ActionDetailsSlackPostMessageAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsSlackPostMessageAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -9078,6 +10359,8 @@ type __premarshalListActionsSearchDomainActionsSlackPostMessageAction struct {
 	Fields []ActionDetailsFieldsSlackFieldEntry `json:"fields"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsSlackPostMessageAction) MarshalJSON() ([]byte, error) {
@@ -9098,6 +10381,7 @@ func (v *ListActionsSearchDomainActionsSlackPostMessageAction) __premarshalJSON(
 	retval.Channels = v.ActionDetailsSlackPostMessageAction.Channels
 	retval.Fields = v.ActionDetailsSlackPostMessageAction.Fields
 	retval.UseProxy = v.ActionDetailsSlackPostMessageAction.UseProxy
+	retval.Labels = v.ActionDetailsSlackPostMessageAction.Labels
 	return &retval, nil
 }
 
@@ -9126,6 +10410,11 @@ func (v *ListActionsSearchDomainActionsUploadFileAction) GetName() string {
 // GetFileName returns ListActionsSearchDomainActionsUploadFileAction.FileName, and is useful for accessing the field via an interface.
 func (v *ListActionsSearchDomainActionsUploadFileAction) GetFileName() string {
 	return v.ActionDetailsUploadFileAction.FileName
+}
+
+// GetLabels returns ListActionsSearchDomainActionsUploadFileAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsUploadFileAction) GetLabels() []string {
+	return v.ActionDetailsUploadFileAction.Labels
 }
 
 func (v *ListActionsSearchDomainActionsUploadFileAction) UnmarshalJSON(b []byte) error {
@@ -9161,6 +10450,8 @@ type __premarshalListActionsSearchDomainActionsUploadFileAction struct {
 	Name string `json:"name"`
 
 	FileName string `json:"fileName"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsUploadFileAction) MarshalJSON() ([]byte, error) {
@@ -9178,6 +10469,7 @@ func (v *ListActionsSearchDomainActionsUploadFileAction) __premarshalJSON() (*__
 	retval.Id = v.ActionDetailsUploadFileAction.Id
 	retval.Name = v.ActionDetailsUploadFileAction.Name
 	retval.FileName = v.ActionDetailsUploadFileAction.FileName
+	retval.Labels = v.ActionDetailsUploadFileAction.Labels
 	return &retval, nil
 }
 
@@ -9218,6 +10510,11 @@ func (v *ListActionsSearchDomainActionsVictorOpsAction) GetUseProxy() bool {
 	return v.ActionDetailsVictorOpsAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsVictorOpsAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsVictorOpsAction) GetLabels() []string {
+	return v.ActionDetailsVictorOpsAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsVictorOpsAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -9255,6 +10552,8 @@ type __premarshalListActionsSearchDomainActionsVictorOpsAction struct {
 	NotifyUrl string `json:"notifyUrl"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsVictorOpsAction) MarshalJSON() ([]byte, error) {
@@ -9274,6 +10573,7 @@ func (v *ListActionsSearchDomainActionsVictorOpsAction) __premarshalJSON() (*__p
 	retval.MessageType = v.ActionDetailsVictorOpsAction.MessageType
 	retval.NotifyUrl = v.ActionDetailsVictorOpsAction.NotifyUrl
 	retval.UseProxy = v.ActionDetailsVictorOpsAction.UseProxy
+	retval.Labels = v.ActionDetailsVictorOpsAction.Labels
 	return &retval, nil
 }
 
@@ -9329,6 +10629,11 @@ func (v *ListActionsSearchDomainActionsWebhookAction) GetUseProxy() bool {
 	return v.ActionDetailsWebhookAction.UseProxy
 }
 
+// GetLabels returns ListActionsSearchDomainActionsWebhookAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsSearchDomainActionsWebhookAction) GetLabels() []string {
+	return v.ActionDetailsWebhookAction.Labels
+}
+
 func (v *ListActionsSearchDomainActionsWebhookAction) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
@@ -9372,6 +10677,8 @@ type __premarshalListActionsSearchDomainActionsWebhookAction struct {
 	IgnoreSSL bool `json:"ignoreSSL"`
 
 	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
 }
 
 func (v *ListActionsSearchDomainActionsWebhookAction) MarshalJSON() ([]byte, error) {
@@ -9394,6 +10701,7 @@ func (v *ListActionsSearchDomainActionsWebhookAction) __premarshalJSON() (*__pre
 	retval.WebhookBodyTemplate = v.ActionDetailsWebhookAction.WebhookBodyTemplate
 	retval.IgnoreSSL = v.ActionDetailsWebhookAction.IgnoreSSL
 	retval.UseProxy = v.ActionDetailsWebhookAction.UseProxy
+	retval.Labels = v.ActionDetailsWebhookAction.Labels
 	return &retval, nil
 }
 
@@ -9403,7 +10711,8 @@ func (v *ListActionsSearchDomainActionsWebhookAction) __premarshalJSON() (*__pre
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListActionsSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A list of saved actions.
+	// Stability: Long-term
 	Actions []ListActionsSearchDomainActionsAction `json:"-"`
 }
 
@@ -9499,7 +10808,8 @@ func (v *ListActionsSearchDomainRepository) __premarshalJSON() (*__premarshalLis
 // Represents information about a view, pulling data from one or several repositories.
 type ListActionsSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// A list of saved actions.
+	// Stability: Long-term
 	Actions []ListActionsSearchDomainActionsAction `json:"-"`
 }
 
@@ -9583,6 +10893,1623 @@ func (v *ListActionsSearchDomainView) __premarshalJSON() (*__premarshalListActio
 			if err != nil {
 				return nil, fmt.Errorf(
 					"unable to marshal ListActionsSearchDomainView.Actions: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// ListActionsWithoutS3Response is returned by ListActionsWithoutS3 on success.
+type ListActionsWithoutS3Response struct {
+	// Stability: Long-term
+	SearchDomain ListActionsWithoutS3SearchDomain `json:"-"`
+}
+
+// GetSearchDomain returns ListActionsWithoutS3Response.SearchDomain, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3Response) GetSearchDomain() ListActionsWithoutS3SearchDomain {
+	return v.SearchDomain
+}
+
+func (v *ListActionsWithoutS3Response) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3Response
+		SearchDomain json.RawMessage `json:"searchDomain"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3Response = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.SearchDomain
+		src := firstPass.SearchDomain
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalListActionsWithoutS3SearchDomain(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal ListActionsWithoutS3Response.SearchDomain: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3Response struct {
+	SearchDomain json.RawMessage `json:"searchDomain"`
+}
+
+func (v *ListActionsWithoutS3Response) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3Response) __premarshalJSON() (*__premarshalListActionsWithoutS3Response, error) {
+	var retval __premarshalListActionsWithoutS3Response
+
+	{
+
+		dst := &retval.SearchDomain
+		src := v.SearchDomain
+		var err error
+		*dst, err = __marshalListActionsWithoutS3SearchDomain(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal ListActionsWithoutS3Response.SearchDomain: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomain includes the requested fields of the GraphQL interface SearchDomain.
+//
+// ListActionsWithoutS3SearchDomain is implemented by the following types:
+// ListActionsWithoutS3SearchDomainRepository
+// ListActionsWithoutS3SearchDomainView
+// The GraphQL type's documentation follows.
+//
+// Common interface for Repositories and Views.
+type ListActionsWithoutS3SearchDomain interface {
+	implementsGraphQLInterfaceListActionsWithoutS3SearchDomain()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+	// GetActions returns the interface-field "actions" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// A list of saved actions.
+	// Stability: Long-term
+	GetActions() []ListActionsWithoutS3SearchDomainActionsAction
+}
+
+func (v *ListActionsWithoutS3SearchDomainRepository) implementsGraphQLInterfaceListActionsWithoutS3SearchDomain() {
+}
+func (v *ListActionsWithoutS3SearchDomainView) implementsGraphQLInterfaceListActionsWithoutS3SearchDomain() {
+}
+
+func __unmarshalListActionsWithoutS3SearchDomain(b []byte, v *ListActionsWithoutS3SearchDomain) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Repository":
+		*v = new(ListActionsWithoutS3SearchDomainRepository)
+		return json.Unmarshal(b, *v)
+	case "View":
+		*v = new(ListActionsWithoutS3SearchDomainView)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing SearchDomain.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ListActionsWithoutS3SearchDomain: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalListActionsWithoutS3SearchDomain(v *ListActionsWithoutS3SearchDomain) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ListActionsWithoutS3SearchDomainRepository:
+		typename = "Repository"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainRepository
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainView:
+		typename = "View"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainView
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ListActionsWithoutS3SearchDomain: "%T"`, v)
+	}
+}
+
+// ListActionsWithoutS3SearchDomainActionsAction includes the requested fields of the GraphQL interface Action.
+//
+// ListActionsWithoutS3SearchDomainActionsAction is implemented by the following types:
+// ListActionsWithoutS3SearchDomainActionsEmailAction
+// ListActionsWithoutS3SearchDomainActionsHumioRepoAction
+// ListActionsWithoutS3SearchDomainActionsOpsGenieAction
+// ListActionsWithoutS3SearchDomainActionsPagerDutyAction
+// ListActionsWithoutS3SearchDomainActionsS3Action
+// ListActionsWithoutS3SearchDomainActionsSlackAction
+// ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction
+// ListActionsWithoutS3SearchDomainActionsUploadFileAction
+// ListActionsWithoutS3SearchDomainActionsVictorOpsAction
+// ListActionsWithoutS3SearchDomainActionsWebhookAction
+// The GraphQL type's documentation follows.
+//
+// An action that can be invoked from a trigger.
+type ListActionsWithoutS3SearchDomainActionsAction interface {
+	implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+	ActionDetailsWithoutS3
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) implementsGraphQLInterfaceListActionsWithoutS3SearchDomainActionsAction() {
+}
+
+func __unmarshalListActionsWithoutS3SearchDomainActionsAction(b []byte, v *ListActionsWithoutS3SearchDomainActionsAction) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "EmailAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsEmailAction)
+		return json.Unmarshal(b, *v)
+	case "HumioRepoAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsHumioRepoAction)
+		return json.Unmarshal(b, *v)
+	case "OpsGenieAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsOpsGenieAction)
+		return json.Unmarshal(b, *v)
+	case "PagerDutyAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsPagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(ListActionsWithoutS3SearchDomainActionsS3Action)
+		return json.Unmarshal(b, *v)
+	case "SlackAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsSlackAction)
+		return json.Unmarshal(b, *v)
+	case "SlackPostMessageAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction)
+		return json.Unmarshal(b, *v)
+	case "UploadFileAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsUploadFileAction)
+		return json.Unmarshal(b, *v)
+	case "VictorOpsAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsVictorOpsAction)
+		return json.Unmarshal(b, *v)
+	case "WebhookAction":
+		*v = new(ListActionsWithoutS3SearchDomainActionsWebhookAction)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Action.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ListActionsWithoutS3SearchDomainActionsAction: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalListActionsWithoutS3SearchDomainActionsAction(v *ListActionsWithoutS3SearchDomainActionsAction) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ListActionsWithoutS3SearchDomainActionsEmailAction:
+		typename = "EmailAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsEmailAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsHumioRepoAction:
+		typename = "HumioRepoAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsHumioRepoAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsOpsGenieAction:
+		typename = "OpsGenieAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsOpsGenieAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsPagerDutyAction:
+		typename = "PagerDutyAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsPagerDutyAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsS3Action:
+		typename = "S3Action"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsS3Action
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsSlackAction:
+		typename = "SlackAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsSlackAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction:
+		typename = "SlackPostMessageAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsSlackPostMessageAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsUploadFileAction:
+		typename = "UploadFileAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsUploadFileAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsVictorOpsAction:
+		typename = "VictorOpsAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsVictorOpsAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *ListActionsWithoutS3SearchDomainActionsWebhookAction:
+		typename = "WebhookAction"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalListActionsWithoutS3SearchDomainActionsWebhookAction
+		}{typename, premarshaled}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ListActionsWithoutS3SearchDomainActionsAction: "%T"`, v)
+	}
+}
+
+// ListActionsWithoutS3SearchDomainActionsEmailAction includes the requested fields of the GraphQL type EmailAction.
+// The GraphQL type's documentation follows.
+//
+// An email action.
+type ListActionsWithoutS3SearchDomainActionsEmailAction struct {
+	Typename                          *string `json:"__typename"`
+	ActionDetailsWithoutS3EmailAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsEmailAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetTypename() *string { return v.Typename }
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsEmailAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetId() string {
+	return v.ActionDetailsWithoutS3EmailAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsEmailAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetName() string {
+	return v.ActionDetailsWithoutS3EmailAction.Name
+}
+
+// GetRecipients returns ListActionsWithoutS3SearchDomainActionsEmailAction.Recipients, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetRecipients() []string {
+	return v.ActionDetailsWithoutS3EmailAction.Recipients
+}
+
+// GetSubjectTemplate returns ListActionsWithoutS3SearchDomainActionsEmailAction.SubjectTemplate, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetSubjectTemplate() *string {
+	return v.ActionDetailsWithoutS3EmailAction.SubjectTemplate
+}
+
+// GetEmailBodyTemplate returns ListActionsWithoutS3SearchDomainActionsEmailAction.EmailBodyTemplate, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetEmailBodyTemplate() *string {
+	return v.ActionDetailsWithoutS3EmailAction.EmailBodyTemplate
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsEmailAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3EmailAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsEmailAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3EmailAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsEmailAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsEmailAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3EmailAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsEmailAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Recipients []string `json:"recipients"`
+
+	SubjectTemplate *string `json:"subjectTemplate"`
+
+	EmailBodyTemplate *string `json:"emailBodyTemplate"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsEmailAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsEmailAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsEmailAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3EmailAction.Id
+	retval.Name = v.ActionDetailsWithoutS3EmailAction.Name
+	retval.Recipients = v.ActionDetailsWithoutS3EmailAction.Recipients
+	retval.SubjectTemplate = v.ActionDetailsWithoutS3EmailAction.SubjectTemplate
+	retval.EmailBodyTemplate = v.ActionDetailsWithoutS3EmailAction.EmailBodyTemplate
+	retval.UseProxy = v.ActionDetailsWithoutS3EmailAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3EmailAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsHumioRepoAction includes the requested fields of the GraphQL type HumioRepoAction.
+// The GraphQL type's documentation follows.
+//
+// A LogScale repository action.
+type ListActionsWithoutS3SearchDomainActionsHumioRepoAction struct {
+	Typename                              *string `json:"__typename"`
+	ActionDetailsWithoutS3HumioRepoAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsHumioRepoAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsHumioRepoAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) GetId() string {
+	return v.ActionDetailsWithoutS3HumioRepoAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsHumioRepoAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) GetName() string {
+	return v.ActionDetailsWithoutS3HumioRepoAction.Name
+}
+
+// GetIngestToken returns ListActionsWithoutS3SearchDomainActionsHumioRepoAction.IngestToken, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) GetIngestToken() string {
+	return v.ActionDetailsWithoutS3HumioRepoAction.IngestToken
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsHumioRepoAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3HumioRepoAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsHumioRepoAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsHumioRepoAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3HumioRepoAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsHumioRepoAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	IngestToken string `json:"ingestToken"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsHumioRepoAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsHumioRepoAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsHumioRepoAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3HumioRepoAction.Id
+	retval.Name = v.ActionDetailsWithoutS3HumioRepoAction.Name
+	retval.IngestToken = v.ActionDetailsWithoutS3HumioRepoAction.IngestToken
+	retval.Labels = v.ActionDetailsWithoutS3HumioRepoAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsOpsGenieAction includes the requested fields of the GraphQL type OpsGenieAction.
+// The GraphQL type's documentation follows.
+//
+// An OpsGenie action
+type ListActionsWithoutS3SearchDomainActionsOpsGenieAction struct {
+	Typename                             *string `json:"__typename"`
+	ActionDetailsWithoutS3OpsGenieAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetId() string {
+	return v.ActionDetailsWithoutS3OpsGenieAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetName() string {
+	return v.ActionDetailsWithoutS3OpsGenieAction.Name
+}
+
+// GetApiUrl returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.ApiUrl, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetApiUrl() string {
+	return v.ActionDetailsWithoutS3OpsGenieAction.ApiUrl
+}
+
+// GetGenieKey returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.GenieKey, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetGenieKey() string {
+	return v.ActionDetailsWithoutS3OpsGenieAction.GenieKey
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3OpsGenieAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsOpsGenieAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3OpsGenieAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsOpsGenieAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsOpsGenieAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3OpsGenieAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsOpsGenieAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	ApiUrl string `json:"apiUrl"`
+
+	GenieKey string `json:"genieKey"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsOpsGenieAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsOpsGenieAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsOpsGenieAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3OpsGenieAction.Id
+	retval.Name = v.ActionDetailsWithoutS3OpsGenieAction.Name
+	retval.ApiUrl = v.ActionDetailsWithoutS3OpsGenieAction.ApiUrl
+	retval.GenieKey = v.ActionDetailsWithoutS3OpsGenieAction.GenieKey
+	retval.UseProxy = v.ActionDetailsWithoutS3OpsGenieAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3OpsGenieAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsPagerDutyAction includes the requested fields of the GraphQL type PagerDutyAction.
+// The GraphQL type's documentation follows.
+//
+// A PagerDuty action.
+type ListActionsWithoutS3SearchDomainActionsPagerDutyAction struct {
+	Typename                              *string `json:"__typename"`
+	ActionDetailsWithoutS3PagerDutyAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetId() string {
+	return v.ActionDetailsWithoutS3PagerDutyAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetName() string {
+	return v.ActionDetailsWithoutS3PagerDutyAction.Name
+}
+
+// GetSeverity returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.Severity, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetSeverity() string {
+	return v.ActionDetailsWithoutS3PagerDutyAction.Severity
+}
+
+// GetRoutingKey returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.RoutingKey, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetRoutingKey() string {
+	return v.ActionDetailsWithoutS3PagerDutyAction.RoutingKey
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3PagerDutyAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsPagerDutyAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3PagerDutyAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsPagerDutyAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsPagerDutyAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3PagerDutyAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsPagerDutyAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Severity string `json:"severity"`
+
+	RoutingKey string `json:"routingKey"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsPagerDutyAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsPagerDutyAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsPagerDutyAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3PagerDutyAction.Id
+	retval.Name = v.ActionDetailsWithoutS3PagerDutyAction.Name
+	retval.Severity = v.ActionDetailsWithoutS3PagerDutyAction.Severity
+	retval.RoutingKey = v.ActionDetailsWithoutS3PagerDutyAction.RoutingKey
+	retval.UseProxy = v.ActionDetailsWithoutS3PagerDutyAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3PagerDutyAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsS3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type ListActionsWithoutS3SearchDomainActionsS3Action struct {
+	Typename                       *string `json:"__typename"`
+	ActionDetailsWithoutS3S3Action `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsS3Action.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) GetTypename() *string { return v.Typename }
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsS3Action.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) GetId() string {
+	return v.ActionDetailsWithoutS3S3Action.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsS3Action.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) GetName() string {
+	return v.ActionDetailsWithoutS3S3Action.Name
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsS3Action
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsS3Action = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3S3Action)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsS3Action struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsS3Action) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsS3Action, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsS3Action
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3S3Action.Id
+	retval.Name = v.ActionDetailsWithoutS3S3Action.Name
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsSlackAction includes the requested fields of the GraphQL type SlackAction.
+// The GraphQL type's documentation follows.
+//
+// A Slack action
+type ListActionsWithoutS3SearchDomainActionsSlackAction struct {
+	Typename                          *string `json:"__typename"`
+	ActionDetailsWithoutS3SlackAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsSlackAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetTypename() *string { return v.Typename }
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsSlackAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetId() string {
+	return v.ActionDetailsWithoutS3SlackAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsSlackAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetName() string {
+	return v.ActionDetailsWithoutS3SlackAction.Name
+}
+
+// GetUrl returns ListActionsWithoutS3SearchDomainActionsSlackAction.Url, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetUrl() string {
+	return v.ActionDetailsWithoutS3SlackAction.Url
+}
+
+// GetFields returns ListActionsWithoutS3SearchDomainActionsSlackAction.Fields, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetFields() []ActionDetailsWithoutS3FieldsSlackFieldEntry {
+	return v.ActionDetailsWithoutS3SlackAction.Fields
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsSlackAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3SlackAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsSlackAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3SlackAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsSlackAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsSlackAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3SlackAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsSlackAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Url string `json:"url"`
+
+	Fields []ActionDetailsWithoutS3FieldsSlackFieldEntry `json:"fields"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsSlackAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsSlackAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsSlackAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3SlackAction.Id
+	retval.Name = v.ActionDetailsWithoutS3SlackAction.Name
+	retval.Url = v.ActionDetailsWithoutS3SlackAction.Url
+	retval.Fields = v.ActionDetailsWithoutS3SlackAction.Fields
+	retval.UseProxy = v.ActionDetailsWithoutS3SlackAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3SlackAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction includes the requested fields of the GraphQL type SlackPostMessageAction.
+// The GraphQL type's documentation follows.
+//
+// A slack post-message action.
+type ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction struct {
+	Typename                                     *string `json:"__typename"`
+	ActionDetailsWithoutS3SlackPostMessageAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetId() string {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetName() string {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.Name
+}
+
+// GetApiToken returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.ApiToken, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetApiToken() string {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.ApiToken
+}
+
+// GetChannels returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.Channels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetChannels() []string {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.Channels
+}
+
+// GetFields returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.Fields, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetFields() []ActionDetailsWithoutS3FieldsSlackFieldEntry {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.Fields
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3SlackPostMessageAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3SlackPostMessageAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsSlackPostMessageAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	ApiToken string `json:"apiToken"`
+
+	Channels []string `json:"channels"`
+
+	Fields []ActionDetailsWithoutS3FieldsSlackFieldEntry `json:"fields"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsSlackPostMessageAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsSlackPostMessageAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3SlackPostMessageAction.Id
+	retval.Name = v.ActionDetailsWithoutS3SlackPostMessageAction.Name
+	retval.ApiToken = v.ActionDetailsWithoutS3SlackPostMessageAction.ApiToken
+	retval.Channels = v.ActionDetailsWithoutS3SlackPostMessageAction.Channels
+	retval.Fields = v.ActionDetailsWithoutS3SlackPostMessageAction.Fields
+	retval.UseProxy = v.ActionDetailsWithoutS3SlackPostMessageAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3SlackPostMessageAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsUploadFileAction includes the requested fields of the GraphQL type UploadFileAction.
+// The GraphQL type's documentation follows.
+//
+// An upload file action.
+type ListActionsWithoutS3SearchDomainActionsUploadFileAction struct {
+	Typename                               *string `json:"__typename"`
+	ActionDetailsWithoutS3UploadFileAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsUploadFileAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsUploadFileAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) GetId() string {
+	return v.ActionDetailsWithoutS3UploadFileAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsUploadFileAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) GetName() string {
+	return v.ActionDetailsWithoutS3UploadFileAction.Name
+}
+
+// GetFileName returns ListActionsWithoutS3SearchDomainActionsUploadFileAction.FileName, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) GetFileName() string {
+	return v.ActionDetailsWithoutS3UploadFileAction.FileName
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsUploadFileAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3UploadFileAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsUploadFileAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsUploadFileAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3UploadFileAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsUploadFileAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	FileName string `json:"fileName"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsUploadFileAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsUploadFileAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsUploadFileAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3UploadFileAction.Id
+	retval.Name = v.ActionDetailsWithoutS3UploadFileAction.Name
+	retval.FileName = v.ActionDetailsWithoutS3UploadFileAction.FileName
+	retval.Labels = v.ActionDetailsWithoutS3UploadFileAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsVictorOpsAction includes the requested fields of the GraphQL type VictorOpsAction.
+// The GraphQL type's documentation follows.
+//
+// A VictorOps action.
+type ListActionsWithoutS3SearchDomainActionsVictorOpsAction struct {
+	Typename                              *string `json:"__typename"`
+	ActionDetailsWithoutS3VictorOpsAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetId() string {
+	return v.ActionDetailsWithoutS3VictorOpsAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetName() string {
+	return v.ActionDetailsWithoutS3VictorOpsAction.Name
+}
+
+// GetMessageType returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.MessageType, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetMessageType() string {
+	return v.ActionDetailsWithoutS3VictorOpsAction.MessageType
+}
+
+// GetNotifyUrl returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.NotifyUrl, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetNotifyUrl() string {
+	return v.ActionDetailsWithoutS3VictorOpsAction.NotifyUrl
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3VictorOpsAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsVictorOpsAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3VictorOpsAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsVictorOpsAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsVictorOpsAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3VictorOpsAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsVictorOpsAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	MessageType string `json:"messageType"`
+
+	NotifyUrl string `json:"notifyUrl"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsVictorOpsAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsVictorOpsAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsVictorOpsAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3VictorOpsAction.Id
+	retval.Name = v.ActionDetailsWithoutS3VictorOpsAction.Name
+	retval.MessageType = v.ActionDetailsWithoutS3VictorOpsAction.MessageType
+	retval.NotifyUrl = v.ActionDetailsWithoutS3VictorOpsAction.NotifyUrl
+	retval.UseProxy = v.ActionDetailsWithoutS3VictorOpsAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3VictorOpsAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainActionsWebhookAction includes the requested fields of the GraphQL type WebhookAction.
+// The GraphQL type's documentation follows.
+//
+// A webhook action
+type ListActionsWithoutS3SearchDomainActionsWebhookAction struct {
+	Typename                            *string `json:"__typename"`
+	ActionDetailsWithoutS3WebhookAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Id, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetId() string {
+	return v.ActionDetailsWithoutS3WebhookAction.Id
+}
+
+// GetName returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Name, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetName() string {
+	return v.ActionDetailsWithoutS3WebhookAction.Name
+}
+
+// GetMethod returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Method, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetMethod() string {
+	return v.ActionDetailsWithoutS3WebhookAction.Method
+}
+
+// GetUrl returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Url, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetUrl() string {
+	return v.ActionDetailsWithoutS3WebhookAction.Url
+}
+
+// GetHeaders returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Headers, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetHeaders() []ActionDetailsWithoutS3HeadersHttpHeaderEntry {
+	return v.ActionDetailsWithoutS3WebhookAction.Headers
+}
+
+// GetWebhookBodyTemplate returns ListActionsWithoutS3SearchDomainActionsWebhookAction.WebhookBodyTemplate, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetWebhookBodyTemplate() string {
+	return v.ActionDetailsWithoutS3WebhookAction.WebhookBodyTemplate
+}
+
+// GetIgnoreSSL returns ListActionsWithoutS3SearchDomainActionsWebhookAction.IgnoreSSL, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetIgnoreSSL() bool {
+	return v.ActionDetailsWithoutS3WebhookAction.IgnoreSSL
+}
+
+// GetUseProxy returns ListActionsWithoutS3SearchDomainActionsWebhookAction.UseProxy, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetUseProxy() bool {
+	return v.ActionDetailsWithoutS3WebhookAction.UseProxy
+}
+
+// GetLabels returns ListActionsWithoutS3SearchDomainActionsWebhookAction.Labels, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) GetLabels() []string {
+	return v.ActionDetailsWithoutS3WebhookAction.Labels
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainActionsWebhookAction
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainActionsWebhookAction = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActionDetailsWithoutS3WebhookAction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainActionsWebhookAction struct {
+	Typename *string `json:"__typename"`
+
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Method string `json:"method"`
+
+	Url string `json:"url"`
+
+	Headers []ActionDetailsWithoutS3HeadersHttpHeaderEntry `json:"headers"`
+
+	WebhookBodyTemplate string `json:"WebhookBodyTemplate"`
+
+	IgnoreSSL bool `json:"ignoreSSL"`
+
+	UseProxy bool `json:"useProxy"`
+
+	Labels []string `json:"labels"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainActionsWebhookAction) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainActionsWebhookAction, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainActionsWebhookAction
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActionDetailsWithoutS3WebhookAction.Id
+	retval.Name = v.ActionDetailsWithoutS3WebhookAction.Name
+	retval.Method = v.ActionDetailsWithoutS3WebhookAction.Method
+	retval.Url = v.ActionDetailsWithoutS3WebhookAction.Url
+	retval.Headers = v.ActionDetailsWithoutS3WebhookAction.Headers
+	retval.WebhookBodyTemplate = v.ActionDetailsWithoutS3WebhookAction.WebhookBodyTemplate
+	retval.IgnoreSSL = v.ActionDetailsWithoutS3WebhookAction.IgnoreSSL
+	retval.UseProxy = v.ActionDetailsWithoutS3WebhookAction.UseProxy
+	retval.Labels = v.ActionDetailsWithoutS3WebhookAction.Labels
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainRepository includes the requested fields of the GraphQL type Repository.
+// The GraphQL type's documentation follows.
+//
+// A repository stores ingested data, configures parsers and data retention policies.
+type ListActionsWithoutS3SearchDomainRepository struct {
+	Typename *string `json:"__typename"`
+	// A list of saved actions.
+	// Stability: Long-term
+	Actions []ListActionsWithoutS3SearchDomainActionsAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainRepository.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainRepository) GetTypename() *string { return v.Typename }
+
+// GetActions returns ListActionsWithoutS3SearchDomainRepository.Actions, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainRepository) GetActions() []ListActionsWithoutS3SearchDomainActionsAction {
+	return v.Actions
+}
+
+func (v *ListActionsWithoutS3SearchDomainRepository) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainRepository
+		Actions []json.RawMessage `json:"actions"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainRepository = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Actions
+		src := firstPass.Actions
+		*dst = make(
+			[]ListActionsWithoutS3SearchDomainActionsAction,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalListActionsWithoutS3SearchDomainActionsAction(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal ListActionsWithoutS3SearchDomainRepository.Actions: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainRepository struct {
+	Typename *string `json:"__typename"`
+
+	Actions []json.RawMessage `json:"actions"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainRepository) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainRepository) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainRepository, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainRepository
+
+	retval.Typename = v.Typename
+	{
+
+		dst := &retval.Actions
+		src := v.Actions
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalListActionsWithoutS3SearchDomainActionsAction(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal ListActionsWithoutS3SearchDomainRepository.Actions: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// ListActionsWithoutS3SearchDomainView includes the requested fields of the GraphQL type View.
+// The GraphQL type's documentation follows.
+//
+// Represents information about a view, pulling data from one or several repositories.
+type ListActionsWithoutS3SearchDomainView struct {
+	Typename *string `json:"__typename"`
+	// A list of saved actions.
+	// Stability: Long-term
+	Actions []ListActionsWithoutS3SearchDomainActionsAction `json:"-"`
+}
+
+// GetTypename returns ListActionsWithoutS3SearchDomainView.Typename, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainView) GetTypename() *string { return v.Typename }
+
+// GetActions returns ListActionsWithoutS3SearchDomainView.Actions, and is useful for accessing the field via an interface.
+func (v *ListActionsWithoutS3SearchDomainView) GetActions() []ListActionsWithoutS3SearchDomainActionsAction {
+	return v.Actions
+}
+
+func (v *ListActionsWithoutS3SearchDomainView) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListActionsWithoutS3SearchDomainView
+		Actions []json.RawMessage `json:"actions"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListActionsWithoutS3SearchDomainView = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Actions
+		src := firstPass.Actions
+		*dst = make(
+			[]ListActionsWithoutS3SearchDomainActionsAction,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalListActionsWithoutS3SearchDomainActionsAction(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal ListActionsWithoutS3SearchDomainView.Actions: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListActionsWithoutS3SearchDomainView struct {
+	Typename *string `json:"__typename"`
+
+	Actions []json.RawMessage `json:"actions"`
+}
+
+func (v *ListActionsWithoutS3SearchDomainView) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListActionsWithoutS3SearchDomainView) __premarshalJSON() (*__premarshalListActionsWithoutS3SearchDomainView, error) {
+	var retval __premarshalListActionsWithoutS3SearchDomainView
+
+	retval.Typename = v.Typename
+	{
+
+		dst := &retval.Actions
+		src := v.Actions
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalListActionsWithoutS3SearchDomainActionsAction(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal ListActionsWithoutS3SearchDomainView.Actions: %w", err)
 			}
 		}
 	}
@@ -9678,7 +12605,8 @@ type ListAggregateAlertsSearchDomain interface {
 	// GetAggregateAlerts returns the interface-field "aggregateAlerts" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Saved aggregate alerts.
+	// Stability: Long-term
 	GetAggregateAlerts() []ListAggregateAlertsSearchDomainAggregateAlertsAggregateAlert
 }
 
@@ -9931,7 +12859,8 @@ func (v *ListAggregateAlertsSearchDomainAggregateAlertsAggregateAlert) __premars
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListAggregateAlertsSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved aggregate alerts.
+	// Stability: Long-term
 	AggregateAlerts []ListAggregateAlertsSearchDomainAggregateAlertsAggregateAlert `json:"aggregateAlerts"`
 }
 
@@ -9949,7 +12878,8 @@ func (v *ListAggregateAlertsSearchDomainRepository) GetAggregateAlerts() []ListA
 // Represents information about a view, pulling data from one or several repositories.
 type ListAggregateAlertsSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved aggregate alerts.
+	// Stability: Long-term
 	AggregateAlerts []ListAggregateAlertsSearchDomainAggregateAlertsAggregateAlert `json:"aggregateAlerts"`
 }
 
@@ -10048,7 +12978,8 @@ type ListAlertsSearchDomain interface {
 	// GetAlerts returns the interface-field "alerts" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Saved alerts.
+	// Stability: Long-term
 	GetAlerts() []ListAlertsSearchDomainAlertsAlert
 }
 
@@ -10144,9 +13075,6 @@ func (v *ListAlertsSearchDomainAlertsAlert) GetTimeOfLastTrigger() *int64 {
 	return v.AlertDetails.TimeOfLastTrigger
 }
 
-// GetIsStarred returns ListAlertsSearchDomainAlertsAlert.IsStarred, and is useful for accessing the field via an interface.
-func (v *ListAlertsSearchDomainAlertsAlert) GetIsStarred() bool { return v.AlertDetails.IsStarred }
-
 // GetDescription returns ListAlertsSearchDomainAlertsAlert.Description, and is useful for accessing the field via an interface.
 func (v *ListAlertsSearchDomainAlertsAlert) GetDescription() *string {
 	return v.AlertDetails.Description
@@ -10212,8 +13140,6 @@ type __premarshalListAlertsSearchDomainAlertsAlert struct {
 
 	TimeOfLastTrigger *int64 `json:"timeOfLastTrigger"`
 
-	IsStarred bool `json:"isStarred"`
-
 	Description *string `json:"description"`
 
 	ThrottleTimeMillis int64 `json:"throttleTimeMillis"`
@@ -10246,7 +13172,6 @@ func (v *ListAlertsSearchDomainAlertsAlert) __premarshalJSON() (*__premarshalLis
 	retval.QueryStart = v.AlertDetails.QueryStart
 	retval.ThrottleField = v.AlertDetails.ThrottleField
 	retval.TimeOfLastTrigger = v.AlertDetails.TimeOfLastTrigger
-	retval.IsStarred = v.AlertDetails.IsStarred
 	retval.Description = v.AlertDetails.Description
 	retval.ThrottleTimeMillis = v.AlertDetails.ThrottleTimeMillis
 	retval.Enabled = v.AlertDetails.Enabled
@@ -10274,7 +13199,8 @@ func (v *ListAlertsSearchDomainAlertsAlert) __premarshalJSON() (*__premarshalLis
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListAlertsSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved alerts.
+	// Stability: Long-term
 	Alerts []ListAlertsSearchDomainAlertsAlert `json:"alerts"`
 }
 
@@ -10292,7 +13218,8 @@ func (v *ListAlertsSearchDomainRepository) GetAlerts() []ListAlertsSearchDomainA
 // Represents information about a view, pulling data from one or several repositories.
 type ListAlertsSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved alerts.
+	// Stability: Long-term
 	Alerts []ListAlertsSearchDomainAlertsAlert `json:"alerts"`
 }
 
@@ -10456,7 +13383,7 @@ type ListFilesSearchDomain interface {
 	// GetFiles returns the interface-field "files" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetFiles() []ListFilesSearchDomainFilesFile
 }
 
@@ -10554,7 +13481,7 @@ func (v *ListFilesSearchDomainFilesFileNameAndPath) GetName() string { return v.
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListFilesSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Files []ListFilesSearchDomainFilesFile `json:"files"`
 }
 
@@ -10570,7 +13497,7 @@ func (v *ListFilesSearchDomainRepository) GetFiles() []ListFilesSearchDomainFile
 // Represents information about a view, pulling data from one or several repositories.
 type ListFilesSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Files []ListFilesSearchDomainFilesFile `json:"files"`
 }
 
@@ -10669,7 +13596,8 @@ type ListFilterAlertsSearchDomain interface {
 	// GetFilterAlerts returns the interface-field "filterAlerts" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Saved filter alerts.
+	// Stability: Long-term
 	GetFilterAlerts() []ListFilterAlertsSearchDomainFilterAlertsFilterAlert
 }
 
@@ -10897,7 +13825,8 @@ func (v *ListFilterAlertsSearchDomainFilterAlertsFilterAlert) __premarshalJSON()
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListFilterAlertsSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved filter alerts.
+	// Stability: Long-term
 	FilterAlerts []ListFilterAlertsSearchDomainFilterAlertsFilterAlert `json:"filterAlerts"`
 }
 
@@ -10915,7 +13844,8 @@ func (v *ListFilterAlertsSearchDomainRepository) GetFilterAlerts() []ListFilterA
 // Represents information about a view, pulling data from one or several repositories.
 type ListFilterAlertsSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved filter alerts.
+	// Stability: Long-term
 	FilterAlerts []ListFilterAlertsSearchDomainFilterAlertsFilterAlert `json:"filterAlerts"`
 }
 
@@ -11154,7 +14084,8 @@ type ListInstalledPackagesSearchDomain interface {
 	// GetInstalledPackages returns the interface-field "installedPackages" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// List packages installed on a specific view or repo.
+	// Stability: Long-term
 	GetInstalledPackages() []ListInstalledPackagesSearchDomainInstalledPackagesPackageInstallation
 }
 
@@ -11305,7 +14236,8 @@ func (v *ListInstalledPackagesSearchDomainInstalledPackagesPackageInstallationUp
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListInstalledPackagesSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// List packages installed on a specific view or repo.
+	// Stability: Long-term
 	InstalledPackages []ListInstalledPackagesSearchDomainInstalledPackagesPackageInstallation `json:"installedPackages"`
 }
 
@@ -11323,7 +14255,8 @@ func (v *ListInstalledPackagesSearchDomainRepository) GetInstalledPackages() []L
 // Represents information about a view, pulling data from one or several repositories.
 type ListInstalledPackagesSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// List packages installed on a specific view or repo.
+	// Stability: Long-term
 	InstalledPackages []ListInstalledPackagesSearchDomainInstalledPackagesPackageInstallation `json:"installedPackages"`
 }
 
@@ -11598,7 +14531,8 @@ type ListScheduledSearchesSearchDomain interface {
 	// GetScheduledSearches returns the interface-field "scheduledSearches" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Saved scheduled searches.
+	// Stability: Long-term
 	GetScheduledSearches() []ListScheduledSearchesSearchDomainScheduledSearchesScheduledSearch
 }
 
@@ -11670,7 +14604,8 @@ func __marshalListScheduledSearchesSearchDomain(v *ListScheduledSearchesSearchDo
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListScheduledSearchesSearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved scheduled searches.
+	// Stability: Long-term
 	ScheduledSearches []ListScheduledSearchesSearchDomainScheduledSearchesScheduledSearch `json:"scheduledSearches"`
 }
 
@@ -11869,7 +14804,8 @@ func (v *ListScheduledSearchesSearchDomainScheduledSearchesScheduledSearch) __pr
 // Represents information about a view, pulling data from one or several repositories.
 type ListScheduledSearchesSearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved scheduled searches.
+	// Stability: Long-term
 	ScheduledSearches []ListScheduledSearchesSearchDomainScheduledSearchesScheduledSearch `json:"scheduledSearches"`
 }
 
@@ -11970,7 +14906,8 @@ type ListScheduledSearchesV2SearchDomain interface {
 	// GetScheduledSearches returns the interface-field "scheduledSearches" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Saved scheduled searches.
+	// Stability: Long-term
 	GetScheduledSearches() []ListScheduledSearchesV2SearchDomainScheduledSearchesScheduledSearch
 }
 
@@ -12042,7 +14979,8 @@ func __marshalListScheduledSearchesV2SearchDomain(v *ListScheduledSearchesV2Sear
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListScheduledSearchesV2SearchDomainRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved scheduled searches.
+	// Stability: Long-term
 	ScheduledSearches []ListScheduledSearchesV2SearchDomainScheduledSearchesScheduledSearch `json:"scheduledSearches"`
 }
 
@@ -12257,7 +15195,8 @@ func (v *ListScheduledSearchesV2SearchDomainScheduledSearchesScheduledSearch) __
 // Represents information about a view, pulling data from one or several repositories.
 type ListScheduledSearchesV2SearchDomainView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Saved scheduled searches.
+	// Stability: Long-term
 	ScheduledSearches []ListScheduledSearchesV2SearchDomainScheduledSearchesScheduledSearch `json:"scheduledSearches"`
 }
 
@@ -12361,9 +15300,9 @@ func (v *ListSearchDomainsResponse) __premarshalJSON() (*__premarshalListSearchD
 // A repository stores ingested data, configures parsers and data retention policies.
 type ListSearchDomainsSearchDomainsRepository struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Name string `json:"name"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	AutomaticSearch bool `json:"automaticSearch"`
 }
 
@@ -12393,12 +15332,12 @@ type ListSearchDomainsSearchDomainsSearchDomain interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetName() string
 	// GetAutomaticSearch returns the interface-field "automaticSearch" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	GetAutomaticSearch() bool
 }
 
@@ -12470,9 +15409,9 @@ func __marshalListSearchDomainsSearchDomainsSearchDomain(v *ListSearchDomainsSea
 // Represents information about a view, pulling data from one or several repositories.
 type ListSearchDomainsSearchDomainsView struct {
 	Typename *string `json:"__typename"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	Name string `json:"name"`
-	// Common interface for Repositories and Views.
+	// Stability: Long-term
 	AutomaticSearch bool `json:"automaticSearch"`
 }
 
@@ -12602,6 +15541,7 @@ func (v *ListUsersUsersUser) __premarshalJSON() (*__premarshalListUsersUsersUser
 type OrganizationPermission string
 
 const (
+	OrganizationPermissionGeneratequeryexplanations              OrganizationPermission = "GenerateQueryExplanations"
 	OrganizationPermissionExportorganization                     OrganizationPermission = "ExportOrganization"
 	OrganizationPermissionChangeorganizationpermissions          OrganizationPermission = "ChangeOrganizationPermissions"
 	OrganizationPermissionChangeidentityproviders                OrganizationPermission = "ChangeIdentityProviders"
@@ -12634,6 +15574,8 @@ const (
 	PackageInstallationSourceTypeHumiohub PackageInstallationSourceType = "HumioHub"
 	// Stability: Long-term
 	PackageInstallationSourceTypeZipfile PackageInstallationSourceType = "ZipFile"
+	// Stability: Short-term
+	PackageInstallationSourceTypeLogscaleassetresolutionservice PackageInstallationSourceType = "LogScaleAssetResolutionService"
 )
 
 // ParserDetails includes the GraphQL fields of Parser requested by the fragment ParserDetails.
@@ -12808,9 +15750,9 @@ func (v *ParserDetailsTestCasesParserTestCaseOutputAssertionsParserTestCaseAsser
 
 // Assertions on the shape of a given test case output event. It is a key-pair value, where the index of the output event is the key, and the assertions are the value.
 type ParserTestCaseAssertionsForOutputInput struct {
-	// Assertions on the shape of a given test case output event. It is a key-pair value, where the index of the output event is the key, and the assertions are the value.
+	// The index of the output event which the assertions should apply to.
 	OutputEventIndex int `json:"outputEventIndex"`
-	// Assertions on the shape of a given test case output event. It is a key-pair value, where the index of the output event is the key, and the assertions are the value.
+	// Assertions on the shape of a given test case output event.
 	Assertions ParserTestCaseOutputAssertionsInput `json:"assertions"`
 }
 
@@ -12824,9 +15766,9 @@ func (v *ParserTestCaseAssertionsForOutputInput) GetAssertions() ParserTestCaseO
 
 // A test case for a parser.
 type ParserTestCaseInput struct {
-	// A test case for a parser.
+	// The event to parse and test on.
 	Event ParserTestEventInput `json:"event"`
-	// A test case for a parser.
+	// Assertions on the shape of the test case output events. The list consists of key-value pairs to be treated as a map-construct, where the index of the output event is the key, and the assertions are the value.
 	OutputAssertions []ParserTestCaseAssertionsForOutputInput `json:"outputAssertions"`
 }
 
@@ -12840,9 +15782,9 @@ func (v *ParserTestCaseInput) GetOutputAssertions() []ParserTestCaseAssertionsFo
 
 // Assertions on the shape of a given test case output event.
 type ParserTestCaseOutputAssertionsInput struct {
-	// Assertions on the shape of a given test case output event.
+	// Names of fields which should not be present on the output event.
 	FieldsNotPresent []string `json:"fieldsNotPresent"`
-	// Assertions on the shape of a given test case output event.
+	// Names of fields and their expected value on the output event. These are key-value pairs, and should be treated as a map-construct.
 	FieldsHaveValues []FieldHasValueInput `json:"fieldsHaveValues"`
 }
 
@@ -12858,7 +15800,7 @@ func (v *ParserTestCaseOutputAssertionsInput) GetFieldsHaveValues() []FieldHasVa
 
 // An event for a parser to parse during testing.
 type ParserTestEventInput struct {
-	// An event for a parser to parse during testing.
+	// The contents of the `@rawstring` field when the event begins parsing.
 	RawString string `json:"rawString"`
 }
 
@@ -12870,8 +15812,6 @@ type Permission string
 
 const (
 	PermissionChangeuseraccess Permission = "ChangeUserAccess"
-	// Permission to administer alerts, scheduled searches and actions
-	PermissionChangetriggersandactions Permission = "ChangeTriggersAndActions"
 	// Permission to administer alerts and scheduled searches
 	PermissionChangetriggers Permission = "ChangeTriggers"
 	PermissionCreatetriggers Permission = "CreateTriggers"
@@ -12898,6 +15838,7 @@ const (
 	PermissionUpdatesavedqueries                Permission = "UpdateSavedQueries"
 	PermissionDeletesavedqueries                Permission = "DeleteSavedQueries"
 	PermissionConnectview                       Permission = "ConnectView"
+	PermissionChangearchivingsettings           Permission = "ChangeArchivingSettings"
 	PermissionChangedatadeletionpermissions     Permission = "ChangeDataDeletionPermissions"
 	PermissionChangeretention                   Permission = "ChangeRetention"
 	PermissionChangedefaultsearchsettings       Permission = "ChangeDefaultSearchSettings"
@@ -12937,7 +15878,8 @@ type QueryOwnership interface {
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Query ownership
+	// Id of organization or user owning and running the query
+	// Stability: Long-term
 	GetId() string
 }
 
@@ -13006,7 +15948,8 @@ func __marshalQueryOwnership(v *QueryOwnership) ([]byte, error) {
 //
 // Query ownership
 type QueryOwnershipOrganizationOwnership struct {
-	// Query ownership
+	// Id of organization or user owning and running the query
+	// Stability: Long-term
 	Id string `json:"id"`
 }
 
@@ -13028,7 +15971,8 @@ const (
 //
 // Query ownership
 type QueryOwnershipUserOwnership struct {
-	// Query ownership
+	// Id of organization or user owning and running the query
+	// Stability: Long-term
 	Id string `json:"id"`
 }
 
@@ -13056,7 +16000,6 @@ func (v *RemoveFileRemoveFileBooleanResultType) GetTypename() *string { return v
 // RemoveFileResponse is returned by RemoveFile on success.
 type RemoveFileResponse struct {
 	// Remove file
-	// Stability: Long-term
 	RemoveFile RemoveFileRemoveFileBooleanResultType `json:"removeFile"`
 }
 
@@ -13388,6 +16331,16 @@ type RotateTokenByIDResponse struct {
 // GetRotateToken returns RotateTokenByIDResponse.RotateToken, and is useful for accessing the field via an interface.
 func (v *RotateTokenByIDResponse) GetRotateToken() string { return v.RotateToken }
 
+// Output format to use for S3 action
+type S3ActionEventOutputFormat string
+
+const (
+	// Use NDJSON when writing to S3
+	S3ActionEventOutputFormatNdjson S3ActionEventOutputFormat = "NDJSON"
+	// Use CSV when writing to S3
+	S3ActionEventOutputFormatCsv S3ActionEventOutputFormat = "CSV"
+)
+
 // The format to store archived segments in AWS S3.
 type S3ArchivingFormat string
 
@@ -13625,6 +16578,7 @@ func (v *ScheduledSearchDetails) __premarshalJSON() (*__premarshalScheduledSearc
 // ScheduledSearchDetailsActionsV2HumioRepoAction
 // ScheduledSearchDetailsActionsV2OpsGenieAction
 // ScheduledSearchDetailsActionsV2PagerDutyAction
+// ScheduledSearchDetailsActionsV2S3Action
 // ScheduledSearchDetailsActionsV2SlackAction
 // ScheduledSearchDetailsActionsV2SlackPostMessageAction
 // ScheduledSearchDetailsActionsV2UploadFileAction
@@ -13640,7 +16594,8 @@ type ScheduledSearchDetailsActionsV2Action interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	GetName() string
 }
 
@@ -13651,6 +16606,8 @@ func (v *ScheduledSearchDetailsActionsV2HumioRepoAction) implementsGraphQLInterf
 func (v *ScheduledSearchDetailsActionsV2OpsGenieAction) implementsGraphQLInterfaceScheduledSearchDetailsActionsV2Action() {
 }
 func (v *ScheduledSearchDetailsActionsV2PagerDutyAction) implementsGraphQLInterfaceScheduledSearchDetailsActionsV2Action() {
+}
+func (v *ScheduledSearchDetailsActionsV2S3Action) implementsGraphQLInterfaceScheduledSearchDetailsActionsV2Action() {
 }
 func (v *ScheduledSearchDetailsActionsV2SlackAction) implementsGraphQLInterfaceScheduledSearchDetailsActionsV2Action() {
 }
@@ -13688,6 +16645,9 @@ func __unmarshalScheduledSearchDetailsActionsV2Action(b []byte, v *ScheduledSear
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(ScheduledSearchDetailsActionsV2PagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(ScheduledSearchDetailsActionsV2S3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(ScheduledSearchDetailsActionsV2SlackAction)
@@ -13749,6 +16709,14 @@ func __marshalScheduledSearchDetailsActionsV2Action(v *ScheduledSearchDetailsAct
 			*ScheduledSearchDetailsActionsV2PagerDutyAction
 		}{typename, v}
 		return json.Marshal(result)
+	case *ScheduledSearchDetailsActionsV2S3Action:
+		typename = "S3Action"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ScheduledSearchDetailsActionsV2S3Action
+		}{typename, v}
+		return json.Marshal(result)
 	case *ScheduledSearchDetailsActionsV2SlackAction:
 		typename = "SlackAction"
 
@@ -13803,7 +16771,8 @@ func __marshalScheduledSearchDetailsActionsV2Action(v *ScheduledSearchDetailsAct
 // An email action.
 type ScheduledSearchDetailsActionsV2EmailAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13819,7 +16788,8 @@ func (v *ScheduledSearchDetailsActionsV2EmailAction) GetName() string { return v
 // A LogScale repository action.
 type ScheduledSearchDetailsActionsV2HumioRepoAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13835,7 +16805,8 @@ func (v *ScheduledSearchDetailsActionsV2HumioRepoAction) GetName() string { retu
 // An OpsGenie action
 type ScheduledSearchDetailsActionsV2OpsGenieAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13851,7 +16822,8 @@ func (v *ScheduledSearchDetailsActionsV2OpsGenieAction) GetName() string { retur
 // A PagerDuty action.
 type ScheduledSearchDetailsActionsV2PagerDutyAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13861,13 +16833,31 @@ func (v *ScheduledSearchDetailsActionsV2PagerDutyAction) GetTypename() *string {
 // GetName returns ScheduledSearchDetailsActionsV2PagerDutyAction.Name, and is useful for accessing the field via an interface.
 func (v *ScheduledSearchDetailsActionsV2PagerDutyAction) GetName() string { return v.Name }
 
+// ScheduledSearchDetailsActionsV2S3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type ScheduledSearchDetailsActionsV2S3Action struct {
+	Typename *string `json:"__typename"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+}
+
+// GetTypename returns ScheduledSearchDetailsActionsV2S3Action.Typename, and is useful for accessing the field via an interface.
+func (v *ScheduledSearchDetailsActionsV2S3Action) GetTypename() *string { return v.Typename }
+
+// GetName returns ScheduledSearchDetailsActionsV2S3Action.Name, and is useful for accessing the field via an interface.
+func (v *ScheduledSearchDetailsActionsV2S3Action) GetName() string { return v.Name }
+
 // ScheduledSearchDetailsActionsV2SlackAction includes the requested fields of the GraphQL type SlackAction.
 // The GraphQL type's documentation follows.
 //
 // A Slack action
 type ScheduledSearchDetailsActionsV2SlackAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13883,7 +16873,8 @@ func (v *ScheduledSearchDetailsActionsV2SlackAction) GetName() string { return v
 // A slack post-message action.
 type ScheduledSearchDetailsActionsV2SlackPostMessageAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13901,7 +16892,8 @@ func (v *ScheduledSearchDetailsActionsV2SlackPostMessageAction) GetName() string
 // An upload file action.
 type ScheduledSearchDetailsActionsV2UploadFileAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13917,7 +16909,8 @@ func (v *ScheduledSearchDetailsActionsV2UploadFileAction) GetName() string { ret
 // A VictorOps action.
 type ScheduledSearchDetailsActionsV2VictorOpsAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -13933,7 +16926,8 @@ func (v *ScheduledSearchDetailsActionsV2VictorOpsAction) GetName() string { retu
 // A webhook action
 type ScheduledSearchDetailsActionsV2WebhookAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14197,6 +17191,7 @@ func (v *ScheduledSearchV2Details) __premarshalJSON() (*__premarshalScheduledSea
 // ScheduledSearchV2DetailsActionsV2HumioRepoAction
 // ScheduledSearchV2DetailsActionsV2OpsGenieAction
 // ScheduledSearchV2DetailsActionsV2PagerDutyAction
+// ScheduledSearchV2DetailsActionsV2S3Action
 // ScheduledSearchV2DetailsActionsV2SlackAction
 // ScheduledSearchV2DetailsActionsV2SlackPostMessageAction
 // ScheduledSearchV2DetailsActionsV2UploadFileAction
@@ -14212,7 +17207,8 @@ type ScheduledSearchV2DetailsActionsV2Action interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	GetName() string
 }
 
@@ -14223,6 +17219,8 @@ func (v *ScheduledSearchV2DetailsActionsV2HumioRepoAction) implementsGraphQLInte
 func (v *ScheduledSearchV2DetailsActionsV2OpsGenieAction) implementsGraphQLInterfaceScheduledSearchV2DetailsActionsV2Action() {
 }
 func (v *ScheduledSearchV2DetailsActionsV2PagerDutyAction) implementsGraphQLInterfaceScheduledSearchV2DetailsActionsV2Action() {
+}
+func (v *ScheduledSearchV2DetailsActionsV2S3Action) implementsGraphQLInterfaceScheduledSearchV2DetailsActionsV2Action() {
 }
 func (v *ScheduledSearchV2DetailsActionsV2SlackAction) implementsGraphQLInterfaceScheduledSearchV2DetailsActionsV2Action() {
 }
@@ -14260,6 +17258,9 @@ func __unmarshalScheduledSearchV2DetailsActionsV2Action(b []byte, v *ScheduledSe
 		return json.Unmarshal(b, *v)
 	case "PagerDutyAction":
 		*v = new(ScheduledSearchV2DetailsActionsV2PagerDutyAction)
+		return json.Unmarshal(b, *v)
+	case "S3Action":
+		*v = new(ScheduledSearchV2DetailsActionsV2S3Action)
 		return json.Unmarshal(b, *v)
 	case "SlackAction":
 		*v = new(ScheduledSearchV2DetailsActionsV2SlackAction)
@@ -14321,6 +17322,14 @@ func __marshalScheduledSearchV2DetailsActionsV2Action(v *ScheduledSearchV2Detail
 			*ScheduledSearchV2DetailsActionsV2PagerDutyAction
 		}{typename, v}
 		return json.Marshal(result)
+	case *ScheduledSearchV2DetailsActionsV2S3Action:
+		typename = "S3Action"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ScheduledSearchV2DetailsActionsV2S3Action
+		}{typename, v}
+		return json.Marshal(result)
 	case *ScheduledSearchV2DetailsActionsV2SlackAction:
 		typename = "SlackAction"
 
@@ -14375,7 +17384,8 @@ func __marshalScheduledSearchV2DetailsActionsV2Action(v *ScheduledSearchV2Detail
 // An email action.
 type ScheduledSearchV2DetailsActionsV2EmailAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14391,7 +17401,8 @@ func (v *ScheduledSearchV2DetailsActionsV2EmailAction) GetName() string { return
 // A LogScale repository action.
 type ScheduledSearchV2DetailsActionsV2HumioRepoAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14407,7 +17418,8 @@ func (v *ScheduledSearchV2DetailsActionsV2HumioRepoAction) GetName() string { re
 // An OpsGenie action
 type ScheduledSearchV2DetailsActionsV2OpsGenieAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14423,7 +17435,8 @@ func (v *ScheduledSearchV2DetailsActionsV2OpsGenieAction) GetName() string { ret
 // A PagerDuty action.
 type ScheduledSearchV2DetailsActionsV2PagerDutyAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14433,13 +17446,31 @@ func (v *ScheduledSearchV2DetailsActionsV2PagerDutyAction) GetTypename() *string
 // GetName returns ScheduledSearchV2DetailsActionsV2PagerDutyAction.Name, and is useful for accessing the field via an interface.
 func (v *ScheduledSearchV2DetailsActionsV2PagerDutyAction) GetName() string { return v.Name }
 
+// ScheduledSearchV2DetailsActionsV2S3Action includes the requested fields of the GraphQL type S3Action.
+// The GraphQL type's documentation follows.
+//
+// An S3 action
+type ScheduledSearchV2DetailsActionsV2S3Action struct {
+	Typename *string `json:"__typename"`
+	// The name of the action.
+	// Stability: Long-term
+	Name string `json:"name"`
+}
+
+// GetTypename returns ScheduledSearchV2DetailsActionsV2S3Action.Typename, and is useful for accessing the field via an interface.
+func (v *ScheduledSearchV2DetailsActionsV2S3Action) GetTypename() *string { return v.Typename }
+
+// GetName returns ScheduledSearchV2DetailsActionsV2S3Action.Name, and is useful for accessing the field via an interface.
+func (v *ScheduledSearchV2DetailsActionsV2S3Action) GetName() string { return v.Name }
+
 // ScheduledSearchV2DetailsActionsV2SlackAction includes the requested fields of the GraphQL type SlackAction.
 // The GraphQL type's documentation follows.
 //
 // A Slack action
 type ScheduledSearchV2DetailsActionsV2SlackAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14455,7 +17486,8 @@ func (v *ScheduledSearchV2DetailsActionsV2SlackAction) GetName() string { return
 // A slack post-message action.
 type ScheduledSearchV2DetailsActionsV2SlackPostMessageAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14473,7 +17505,8 @@ func (v *ScheduledSearchV2DetailsActionsV2SlackPostMessageAction) GetName() stri
 // An upload file action.
 type ScheduledSearchV2DetailsActionsV2UploadFileAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14489,7 +17522,8 @@ func (v *ScheduledSearchV2DetailsActionsV2UploadFileAction) GetName() string { r
 // A VictorOps action.
 type ScheduledSearchV2DetailsActionsV2VictorOpsAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14505,7 +17539,8 @@ func (v *ScheduledSearchV2DetailsActionsV2VictorOpsAction) GetName() string { re
 // A webhook action
 type ScheduledSearchV2DetailsActionsV2WebhookAction struct {
 	Typename *string `json:"__typename"`
-	// An action that can be invoked from a trigger.
+	// The name of the action.
+	// Stability: Long-term
 	Name string `json:"name"`
 }
 
@@ -14750,9 +17785,9 @@ func (v *SharedQueryOwnershipTypeUserOwnership) __premarshalJSON() (*__premarsha
 
 // Slack message field entry.
 type SlackFieldEntryInput struct {
-	// Slack message field entry.
+	// Key of a Slack field.
 	FieldName string `json:"fieldName"`
-	// Slack message field entry.
+	// Value of a Slack field.
 	Value string `json:"value"`
 }
 
@@ -15238,11 +18273,10 @@ func (v *UserDetails) GetCreatedAt() time.Time { return v.CreatedAt }
 
 // The repositories this view will read from.
 type ViewConnectionInput struct {
-	// The repositories this view will read from.
+	// The name of the connected repository.
 	RepositoryName string `json:"repositoryName"`
-	// The repositories this view will read from.
-	Filter string `json:"filter"`
-	// The repositories this view will read from.
+	// The filter applied to all results from the repository.
+	Filter          string               `json:"filter"`
 	LanguageVersion *LanguageVersionEnum `json:"languageVersion"`
 }
 
@@ -15457,6 +18491,7 @@ type __CreateEmailActionInput struct {
 	SubjectTemplate  *string  `json:"SubjectTemplate"`
 	BodyTemplate     *string  `json:"BodyTemplate"`
 	UseProxy         bool     `json:"UseProxy"`
+	Labels           []string `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateEmailActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15476,6 +18511,9 @@ func (v *__CreateEmailActionInput) GetBodyTemplate() *string { return v.BodyTemp
 
 // GetUseProxy returns __CreateEmailActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreateEmailActionInput) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns __CreateEmailActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateEmailActionInput) GetLabels() []string { return v.Labels }
 
 // __CreateFilterAlertInput is used internally by genqlient
 type __CreateFilterAlertInput struct {
@@ -15529,9 +18567,10 @@ func (v *__CreateFilterAlertInput) GetQueryOwnershipType() QueryOwnershipType {
 
 // __CreateHumioRepoActionInput is used internally by genqlient
 type __CreateHumioRepoActionInput struct {
-	SearchDomainName string `json:"SearchDomainName"`
-	ActionName       string `json:"ActionName"`
-	IngestToken      string `json:"IngestToken"`
+	SearchDomainName string   `json:"SearchDomainName"`
+	ActionName       string   `json:"ActionName"`
+	IngestToken      string   `json:"IngestToken"`
+	Labels           []string `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateHumioRepoActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15543,13 +18582,17 @@ func (v *__CreateHumioRepoActionInput) GetActionName() string { return v.ActionN
 // GetIngestToken returns __CreateHumioRepoActionInput.IngestToken, and is useful for accessing the field via an interface.
 func (v *__CreateHumioRepoActionInput) GetIngestToken() string { return v.IngestToken }
 
+// GetLabels returns __CreateHumioRepoActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateHumioRepoActionInput) GetLabels() []string { return v.Labels }
+
 // __CreateOpsGenieActionInput is used internally by genqlient
 type __CreateOpsGenieActionInput struct {
-	SearchDomainName string `json:"SearchDomainName"`
-	ActionName       string `json:"ActionName"`
-	ApiUrl           string `json:"ApiUrl"`
-	GenieKey         string `json:"GenieKey"`
-	UseProxy         bool   `json:"UseProxy"`
+	SearchDomainName string   `json:"SearchDomainName"`
+	ActionName       string   `json:"ActionName"`
+	ApiUrl           string   `json:"ApiUrl"`
+	GenieKey         string   `json:"GenieKey"`
+	UseProxy         bool     `json:"UseProxy"`
+	Labels           []string `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateOpsGenieActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15567,13 +18610,17 @@ func (v *__CreateOpsGenieActionInput) GetGenieKey() string { return v.GenieKey }
 // GetUseProxy returns __CreateOpsGenieActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreateOpsGenieActionInput) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns __CreateOpsGenieActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateOpsGenieActionInput) GetLabels() []string { return v.Labels }
+
 // __CreatePagerDutyActionInput is used internally by genqlient
 type __CreatePagerDutyActionInput struct {
-	SearchDomainName string `json:"SearchDomainName"`
-	ActionName       string `json:"ActionName"`
-	Severity         string `json:"Severity"`
-	RoutingKey       string `json:"RoutingKey"`
-	UseProxy         bool   `json:"UseProxy"`
+	SearchDomainName string   `json:"SearchDomainName"`
+	ActionName       string   `json:"ActionName"`
+	Severity         string   `json:"Severity"`
+	RoutingKey       string   `json:"RoutingKey"`
+	UseProxy         bool     `json:"UseProxy"`
+	Labels           []string `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreatePagerDutyActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15590,6 +18637,9 @@ func (v *__CreatePagerDutyActionInput) GetRoutingKey() string { return v.Routing
 
 // GetUseProxy returns __CreatePagerDutyActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreatePagerDutyActionInput) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns __CreatePagerDutyActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreatePagerDutyActionInput) GetLabels() []string { return v.Labels }
 
 // __CreateParserInput is used internally by genqlient
 type __CreateParserInput struct {
@@ -15634,6 +18684,50 @@ type __CreateRepositoryInput struct {
 
 // GetRepositoryName returns __CreateRepositoryInput.RepositoryName, and is useful for accessing the field via an interface.
 func (v *__CreateRepositoryInput) GetRepositoryName() string { return v.RepositoryName }
+
+// __CreateS3ActionInput is used internally by genqlient
+type __CreateS3ActionInput struct {
+	SearchDomainName string                    `json:"SearchDomainName"`
+	ActionName       string                    `json:"ActionName"`
+	RoleArn          string                    `json:"RoleArn"`
+	AwsRegion        string                    `json:"AwsRegion"`
+	BucketName       string                    `json:"BucketName"`
+	FileName         string                    `json:"FileName"`
+	OutputFormat     S3ActionEventOutputFormat `json:"OutputFormat"`
+	OutputMetadata   bool                      `json:"OutputMetadata"`
+	UseProxy         bool                      `json:"UseProxy"`
+	Labels           []string                  `json:"Labels"`
+}
+
+// GetSearchDomainName returns __CreateS3ActionInput.SearchDomainName, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetSearchDomainName() string { return v.SearchDomainName }
+
+// GetActionName returns __CreateS3ActionInput.ActionName, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetActionName() string { return v.ActionName }
+
+// GetRoleArn returns __CreateS3ActionInput.RoleArn, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetRoleArn() string { return v.RoleArn }
+
+// GetAwsRegion returns __CreateS3ActionInput.AwsRegion, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetAwsRegion() string { return v.AwsRegion }
+
+// GetBucketName returns __CreateS3ActionInput.BucketName, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetBucketName() string { return v.BucketName }
+
+// GetFileName returns __CreateS3ActionInput.FileName, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetFileName() string { return v.FileName }
+
+// GetOutputFormat returns __CreateS3ActionInput.OutputFormat, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetOutputFormat() S3ActionEventOutputFormat { return v.OutputFormat }
+
+// GetOutputMetadata returns __CreateS3ActionInput.OutputMetadata, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetOutputMetadata() bool { return v.OutputMetadata }
+
+// GetUseProxy returns __CreateS3ActionInput.UseProxy, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns __CreateS3ActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateS3ActionInput) GetLabels() []string { return v.Labels }
 
 // __CreateScheduledSearchInput is used internally by genqlient
 type __CreateScheduledSearchInput struct {
@@ -15780,6 +18874,7 @@ type __CreateSlackActionInput struct {
 	Fields           []SlackFieldEntryInput `json:"Fields"`
 	Url              string                 `json:"Url"`
 	UseProxy         bool                   `json:"UseProxy"`
+	Labels           []string               `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateSlackActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15797,6 +18892,9 @@ func (v *__CreateSlackActionInput) GetUrl() string { return v.Url }
 // GetUseProxy returns __CreateSlackActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreateSlackActionInput) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns __CreateSlackActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateSlackActionInput) GetLabels() []string { return v.Labels }
+
 // __CreateSlackPostMessageActionInput is used internally by genqlient
 type __CreateSlackPostMessageActionInput struct {
 	SearchDomainName string                 `json:"SearchDomainName"`
@@ -15805,6 +18903,7 @@ type __CreateSlackPostMessageActionInput struct {
 	Channels         []string               `json:"Channels"`
 	Fields           []SlackFieldEntryInput `json:"Fields"`
 	UseProxy         bool                   `json:"UseProxy"`
+	Labels           []string               `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateSlackPostMessageActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15825,11 +18924,15 @@ func (v *__CreateSlackPostMessageActionInput) GetFields() []SlackFieldEntryInput
 // GetUseProxy returns __CreateSlackPostMessageActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreateSlackPostMessageActionInput) GetUseProxy() bool { return v.UseProxy }
 
+// GetLabels returns __CreateSlackPostMessageActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateSlackPostMessageActionInput) GetLabels() []string { return v.Labels }
+
 // __CreateUploadFileActionInput is used internally by genqlient
 type __CreateUploadFileActionInput struct {
-	SearchDomainName string `json:"SearchDomainName"`
-	ActionName       string `json:"ActionName"`
-	FileName         string `json:"FileName"`
+	SearchDomainName string   `json:"SearchDomainName"`
+	ActionName       string   `json:"ActionName"`
+	FileName         string   `json:"FileName"`
+	Labels           []string `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateUploadFileActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15841,13 +18944,17 @@ func (v *__CreateUploadFileActionInput) GetActionName() string { return v.Action
 // GetFileName returns __CreateUploadFileActionInput.FileName, and is useful for accessing the field via an interface.
 func (v *__CreateUploadFileActionInput) GetFileName() string { return v.FileName }
 
+// GetLabels returns __CreateUploadFileActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateUploadFileActionInput) GetLabels() []string { return v.Labels }
+
 // __CreateVictorOpsActionInput is used internally by genqlient
 type __CreateVictorOpsActionInput struct {
-	SearchDomainName string `json:"SearchDomainName"`
-	ActionName       string `json:"ActionName"`
-	MessageType      string `json:"MessageType"`
-	NotifyUrl        string `json:"NotifyUrl"`
-	UseProxy         bool   `json:"UseProxy"`
+	SearchDomainName string   `json:"SearchDomainName"`
+	ActionName       string   `json:"ActionName"`
+	MessageType      string   `json:"MessageType"`
+	NotifyUrl        string   `json:"NotifyUrl"`
+	UseProxy         bool     `json:"UseProxy"`
+	Labels           []string `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateVictorOpsActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15864,6 +18971,9 @@ func (v *__CreateVictorOpsActionInput) GetNotifyUrl() string { return v.NotifyUr
 
 // GetUseProxy returns __CreateVictorOpsActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreateVictorOpsActionInput) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns __CreateVictorOpsActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateVictorOpsActionInput) GetLabels() []string { return v.Labels }
 
 // __CreateViewInput is used internally by genqlient
 type __CreateViewInput struct {
@@ -15891,6 +19001,7 @@ type __CreateWebhookActionInput struct {
 	BodyTemplate     string                 `json:"BodyTemplate"`
 	IgnoreSSL        bool                   `json:"IgnoreSSL"`
 	UseProxy         bool                   `json:"UseProxy"`
+	Labels           []string               `json:"Labels"`
 }
 
 // GetSearchDomainName returns __CreateWebhookActionInput.SearchDomainName, and is useful for accessing the field via an interface.
@@ -15916,6 +19027,9 @@ func (v *__CreateWebhookActionInput) GetIgnoreSSL() bool { return v.IgnoreSSL }
 
 // GetUseProxy returns __CreateWebhookActionInput.UseProxy, and is useful for accessing the field via an interface.
 func (v *__CreateWebhookActionInput) GetUseProxy() bool { return v.UseProxy }
+
+// GetLabels returns __CreateWebhookActionInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateWebhookActionInput) GetLabels() []string { return v.Labels }
 
 // __DeleteActionByIDInput is used internally by genqlient
 type __DeleteActionByIDInput struct {
@@ -16189,58 +19303,6 @@ type __GetUsersByUsernameInput struct {
 // GetUsername returns __GetUsersByUsernameInput.Username, and is useful for accessing the field via an interface.
 func (v *__GetUsersByUsernameInput) GetUsername() string { return v.Username }
 
-// __LegacyCreateParserInput is used internally by genqlient
-type __LegacyCreateParserInput struct {
-	RepositoryName string   `json:"RepositoryName"`
-	Name           string   `json:"Name"`
-	TestData       []string `json:"TestData"`
-	TagFields      []string `json:"TagFields"`
-	SourceCode     string   `json:"SourceCode"`
-	Force          bool     `json:"Force"`
-}
-
-// GetRepositoryName returns __LegacyCreateParserInput.RepositoryName, and is useful for accessing the field via an interface.
-func (v *__LegacyCreateParserInput) GetRepositoryName() string { return v.RepositoryName }
-
-// GetName returns __LegacyCreateParserInput.Name, and is useful for accessing the field via an interface.
-func (v *__LegacyCreateParserInput) GetName() string { return v.Name }
-
-// GetTestData returns __LegacyCreateParserInput.TestData, and is useful for accessing the field via an interface.
-func (v *__LegacyCreateParserInput) GetTestData() []string { return v.TestData }
-
-// GetTagFields returns __LegacyCreateParserInput.TagFields, and is useful for accessing the field via an interface.
-func (v *__LegacyCreateParserInput) GetTagFields() []string { return v.TagFields }
-
-// GetSourceCode returns __LegacyCreateParserInput.SourceCode, and is useful for accessing the field via an interface.
-func (v *__LegacyCreateParserInput) GetSourceCode() string { return v.SourceCode }
-
-// GetForce returns __LegacyCreateParserInput.Force, and is useful for accessing the field via an interface.
-func (v *__LegacyCreateParserInput) GetForce() bool { return v.Force }
-
-// __LegacyDeleteParserByIDInput is used internally by genqlient
-type __LegacyDeleteParserByIDInput struct {
-	RepositoryName string `json:"RepositoryName"`
-	ParserID       string `json:"ParserID"`
-}
-
-// GetRepositoryName returns __LegacyDeleteParserByIDInput.RepositoryName, and is useful for accessing the field via an interface.
-func (v *__LegacyDeleteParserByIDInput) GetRepositoryName() string { return v.RepositoryName }
-
-// GetParserID returns __LegacyDeleteParserByIDInput.ParserID, and is useful for accessing the field via an interface.
-func (v *__LegacyDeleteParserByIDInput) GetParserID() string { return v.ParserID }
-
-// __LegacyGetParserInput is used internally by genqlient
-type __LegacyGetParserInput struct {
-	RepositoryName string `json:"RepositoryName"`
-	ParserName     string `json:"ParserName"`
-}
-
-// GetRepositoryName returns __LegacyGetParserInput.RepositoryName, and is useful for accessing the field via an interface.
-func (v *__LegacyGetParserInput) GetRepositoryName() string { return v.RepositoryName }
-
-// GetParserName returns __LegacyGetParserInput.ParserName, and is useful for accessing the field via an interface.
-func (v *__LegacyGetParserInput) GetParserName() string { return v.ParserName }
-
 // __ListActionsInput is used internally by genqlient
 type __ListActionsInput struct {
 	SearchDomainName string `json:"SearchDomainName"`
@@ -16248,6 +19310,14 @@ type __ListActionsInput struct {
 
 // GetSearchDomainName returns __ListActionsInput.SearchDomainName, and is useful for accessing the field via an interface.
 func (v *__ListActionsInput) GetSearchDomainName() string { return v.SearchDomainName }
+
+// __ListActionsWithoutS3Input is used internally by genqlient
+type __ListActionsWithoutS3Input struct {
+	SearchDomainName string `json:"SearchDomainName"`
+}
+
+// GetSearchDomainName returns __ListActionsWithoutS3Input.SearchDomainName, and is useful for accessing the field via an interface.
+func (v *__ListActionsWithoutS3Input) GetSearchDomainName() string { return v.SearchDomainName }
 
 // __ListAggregateAlertsInput is used internally by genqlient
 type __ListAggregateAlertsInput struct {
@@ -16825,7 +19895,6 @@ fragment AlertDetails on Alert {
 	queryStart
 	throttleField
 	timeOfLastTrigger
-	isStarred
 	description
 	throttleTimeMillis
 	enabled
@@ -16892,14 +19961,15 @@ func CreateAlert(
 
 // The query or mutation executed by CreateEmailAction.
 const CreateEmailAction_Operation = `
-mutation CreateEmailAction ($SearchDomainName: String!, $ActionName: String!, $Recipients: [String!]!, $SubjectTemplate: String, $BodyTemplate: String, $UseProxy: Boolean!) {
-	createEmailAction(input: {viewName:$SearchDomainName,name:$ActionName,recipients:$Recipients,subjectTemplate:$SubjectTemplate,bodyTemplate:$BodyTemplate,useProxy:$UseProxy}) {
+mutation CreateEmailAction ($SearchDomainName: String!, $ActionName: String!, $Recipients: [String!]!, $SubjectTemplate: String, $BodyTemplate: String, $UseProxy: Boolean!, $Labels: [String!]) {
+	createEmailAction(input: {viewName:$SearchDomainName,name:$ActionName,recipients:$Recipients,subjectTemplate:$SubjectTemplate,bodyTemplate:$BodyTemplate,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		recipients
 		subjectTemplate
 		bodyTemplate
 		useProxy
+		labels
 	}
 }
 `
@@ -16913,6 +19983,7 @@ func CreateEmailAction(
 	SubjectTemplate *string,
 	BodyTemplate *string,
 	UseProxy bool,
+	Labels []string,
 ) (*CreateEmailActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateEmailAction",
@@ -16924,6 +19995,7 @@ func CreateEmailAction(
 			SubjectTemplate:  SubjectTemplate,
 			BodyTemplate:     BodyTemplate,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17018,11 +20090,12 @@ func CreateFilterAlert(
 
 // The query or mutation executed by CreateHumioRepoAction.
 const CreateHumioRepoAction_Operation = `
-mutation CreateHumioRepoAction ($SearchDomainName: String!, $ActionName: String!, $IngestToken: String!) {
-	createHumioRepoAction(input: {viewName:$SearchDomainName,name:$ActionName,ingestToken:$IngestToken}) {
+mutation CreateHumioRepoAction ($SearchDomainName: String!, $ActionName: String!, $IngestToken: String!, $Labels: [String!]) {
+	createHumioRepoAction(input: {viewName:$SearchDomainName,name:$ActionName,ingestToken:$IngestToken,labels:$Labels}) {
 		id
 		name
 		ingestToken
+		labels
 	}
 }
 `
@@ -17033,6 +20106,7 @@ func CreateHumioRepoAction(
 	SearchDomainName string,
 	ActionName string,
 	IngestToken string,
+	Labels []string,
 ) (*CreateHumioRepoActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateHumioRepoAction",
@@ -17041,6 +20115,7 @@ func CreateHumioRepoAction(
 			SearchDomainName: SearchDomainName,
 			ActionName:       ActionName,
 			IngestToken:      IngestToken,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17059,13 +20134,14 @@ func CreateHumioRepoAction(
 
 // The query or mutation executed by CreateOpsGenieAction.
 const CreateOpsGenieAction_Operation = `
-mutation CreateOpsGenieAction ($SearchDomainName: String!, $ActionName: String!, $ApiUrl: String!, $GenieKey: String!, $UseProxy: Boolean!) {
-	createOpsGenieAction(input: {viewName:$SearchDomainName,name:$ActionName,apiUrl:$ApiUrl,genieKey:$GenieKey,useProxy:$UseProxy}) {
+mutation CreateOpsGenieAction ($SearchDomainName: String!, $ActionName: String!, $ApiUrl: String!, $GenieKey: String!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createOpsGenieAction(input: {viewName:$SearchDomainName,name:$ActionName,apiUrl:$ApiUrl,genieKey:$GenieKey,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		apiUrl
 		genieKey
 		useProxy
+		labels
 	}
 }
 `
@@ -17078,6 +20154,7 @@ func CreateOpsGenieAction(
 	ApiUrl string,
 	GenieKey string,
 	UseProxy bool,
+	Labels []string,
 ) (*CreateOpsGenieActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateOpsGenieAction",
@@ -17088,6 +20165,7 @@ func CreateOpsGenieAction(
 			ApiUrl:           ApiUrl,
 			GenieKey:         GenieKey,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17106,13 +20184,14 @@ func CreateOpsGenieAction(
 
 // The query or mutation executed by CreatePagerDutyAction.
 const CreatePagerDutyAction_Operation = `
-mutation CreatePagerDutyAction ($SearchDomainName: String!, $ActionName: String!, $Severity: String!, $RoutingKey: String!, $UseProxy: Boolean!) {
-	createPagerDutyAction(input: {viewName:$SearchDomainName,name:$ActionName,severity:$Severity,routingKey:$RoutingKey,useProxy:$UseProxy}) {
+mutation CreatePagerDutyAction ($SearchDomainName: String!, $ActionName: String!, $Severity: String!, $RoutingKey: String!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createPagerDutyAction(input: {viewName:$SearchDomainName,name:$ActionName,severity:$Severity,routingKey:$RoutingKey,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		severity
 		routingKey
 		useProxy
+		labels
 	}
 }
 `
@@ -17125,6 +20204,7 @@ func CreatePagerDutyAction(
 	Severity string,
 	RoutingKey string,
 	UseProxy bool,
+	Labels []string,
 ) (*CreatePagerDutyActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreatePagerDutyAction",
@@ -17135,6 +20215,7 @@ func CreatePagerDutyAction(
 			Severity:         Severity,
 			RoutingKey:       RoutingKey,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17265,6 +20346,68 @@ func CreateRepository(
 	var err_ error
 
 	var data_ CreateRepositoryResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by CreateS3Action.
+const CreateS3Action_Operation = `
+mutation CreateS3Action ($SearchDomainName: RepoOrViewName!, $ActionName: String!, $RoleArn: String!, $AwsRegion: String!, $BucketName: String!, $FileName: String!, $OutputFormat: S3ActionEventOutputFormat!, $OutputMetadata: Boolean!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createS3Action(input: {viewName:$SearchDomainName,name:$ActionName,roleArn:$RoleArn,awsRegion:$AwsRegion,bucketName:$BucketName,fileName:$FileName,outputFormat:$OutputFormat,outputMetadata:$OutputMetadata,useProxy:$UseProxy,labels:$Labels}) {
+		id
+		name
+		roleArn
+		awsRegion
+		bucketName
+		fileName
+		outputFormat
+		outputMetadata
+		useProxy
+		labels
+	}
+}
+`
+
+func CreateS3Action(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	SearchDomainName string,
+	ActionName string,
+	RoleArn string,
+	AwsRegion string,
+	BucketName string,
+	FileName string,
+	OutputFormat S3ActionEventOutputFormat,
+	OutputMetadata bool,
+	UseProxy bool,
+	Labels []string,
+) (*CreateS3ActionResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "CreateS3Action",
+		Query:  CreateS3Action_Operation,
+		Variables: &__CreateS3ActionInput{
+			SearchDomainName: SearchDomainName,
+			ActionName:       ActionName,
+			RoleArn:          RoleArn,
+			AwsRegion:        AwsRegion,
+			BucketName:       BucketName,
+			FileName:         FileName,
+			OutputFormat:     OutputFormat,
+			OutputMetadata:   OutputMetadata,
+			UseProxy:         UseProxy,
+			Labels:           Labels,
+		},
+	}
+	var err_ error
+
+	var data_ CreateS3ActionResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -17454,8 +20597,8 @@ func CreateScheduledSearchV2(
 
 // The query or mutation executed by CreateSlackAction.
 const CreateSlackAction_Operation = `
-mutation CreateSlackAction ($SearchDomainName: String!, $ActionName: String!, $Fields: [SlackFieldEntryInput!]!, $Url: String!, $UseProxy: Boolean!) {
-	createSlackAction(input: {viewName:$SearchDomainName,name:$ActionName,fields:$Fields,url:$Url,useProxy:$UseProxy}) {
+mutation CreateSlackAction ($SearchDomainName: String!, $ActionName: String!, $Fields: [SlackFieldEntryInput!]!, $Url: String!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createSlackAction(input: {viewName:$SearchDomainName,name:$ActionName,fields:$Fields,url:$Url,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		fields {
@@ -17464,6 +20607,7 @@ mutation CreateSlackAction ($SearchDomainName: String!, $ActionName: String!, $F
 		}
 		url
 		useProxy
+		labels
 	}
 }
 `
@@ -17476,6 +20620,7 @@ func CreateSlackAction(
 	Fields []SlackFieldEntryInput,
 	Url string,
 	UseProxy bool,
+	Labels []string,
 ) (*CreateSlackActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateSlackAction",
@@ -17486,6 +20631,7 @@ func CreateSlackAction(
 			Fields:           Fields,
 			Url:              Url,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17504,8 +20650,8 @@ func CreateSlackAction(
 
 // The query or mutation executed by CreateSlackPostMessageAction.
 const CreateSlackPostMessageAction_Operation = `
-mutation CreateSlackPostMessageAction ($SearchDomainName: String!, $ActionName: String!, $ApiToken: String!, $Channels: [String!]!, $Fields: [SlackFieldEntryInput!]!, $UseProxy: Boolean!) {
-	createSlackPostMessageAction(input: {viewName:$SearchDomainName,name:$ActionName,apiToken:$ApiToken,channels:$Channels,fields:$Fields,useProxy:$UseProxy}) {
+mutation CreateSlackPostMessageAction ($SearchDomainName: String!, $ActionName: String!, $ApiToken: String!, $Channels: [String!]!, $Fields: [SlackFieldEntryInput!]!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createSlackPostMessageAction(input: {viewName:$SearchDomainName,name:$ActionName,apiToken:$ApiToken,channels:$Channels,fields:$Fields,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		apiToken
@@ -17515,6 +20661,7 @@ mutation CreateSlackPostMessageAction ($SearchDomainName: String!, $ActionName: 
 			fieldName
 		}
 		useProxy
+		labels
 	}
 }
 `
@@ -17528,6 +20675,7 @@ func CreateSlackPostMessageAction(
 	Channels []string,
 	Fields []SlackFieldEntryInput,
 	UseProxy bool,
+	Labels []string,
 ) (*CreateSlackPostMessageActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateSlackPostMessageAction",
@@ -17539,6 +20687,7 @@ func CreateSlackPostMessageAction(
 			Channels:         Channels,
 			Fields:           Fields,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17557,11 +20706,12 @@ func CreateSlackPostMessageAction(
 
 // The query or mutation executed by CreateUploadFileAction.
 const CreateUploadFileAction_Operation = `
-mutation CreateUploadFileAction ($SearchDomainName: String!, $ActionName: String!, $FileName: String!) {
-	createUploadFileAction(input: {viewName:$SearchDomainName,name:$ActionName,fileName:$FileName}) {
+mutation CreateUploadFileAction ($SearchDomainName: String!, $ActionName: String!, $FileName: String!, $Labels: [String!]) {
+	createUploadFileAction(input: {viewName:$SearchDomainName,name:$ActionName,fileName:$FileName,labels:$Labels}) {
 		id
 		name
 		fileName
+		labels
 	}
 }
 `
@@ -17572,6 +20722,7 @@ func CreateUploadFileAction(
 	SearchDomainName string,
 	ActionName string,
 	FileName string,
+	Labels []string,
 ) (*CreateUploadFileActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateUploadFileAction",
@@ -17580,6 +20731,7 @@ func CreateUploadFileAction(
 			SearchDomainName: SearchDomainName,
 			ActionName:       ActionName,
 			FileName:         FileName,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17598,13 +20750,14 @@ func CreateUploadFileAction(
 
 // The query or mutation executed by CreateVictorOpsAction.
 const CreateVictorOpsAction_Operation = `
-mutation CreateVictorOpsAction ($SearchDomainName: String!, $ActionName: String!, $MessageType: String!, $NotifyUrl: String!, $UseProxy: Boolean!) {
-	createVictorOpsAction(input: {viewName:$SearchDomainName,name:$ActionName,messageType:$MessageType,notifyUrl:$NotifyUrl,useProxy:$UseProxy}) {
+mutation CreateVictorOpsAction ($SearchDomainName: String!, $ActionName: String!, $MessageType: String!, $NotifyUrl: String!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createVictorOpsAction(input: {viewName:$SearchDomainName,name:$ActionName,messageType:$MessageType,notifyUrl:$NotifyUrl,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		messageType
 		notifyUrl
 		useProxy
+		labels
 	}
 }
 `
@@ -17617,6 +20770,7 @@ func CreateVictorOpsAction(
 	MessageType string,
 	NotifyUrl string,
 	UseProxy bool,
+	Labels []string,
 ) (*CreateVictorOpsActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateVictorOpsAction",
@@ -17627,6 +20781,7 @@ func CreateVictorOpsAction(
 			MessageType:      MessageType,
 			NotifyUrl:        NotifyUrl,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -17684,8 +20839,8 @@ func CreateView(
 
 // The query or mutation executed by CreateWebhookAction.
 const CreateWebhookAction_Operation = `
-mutation CreateWebhookAction ($SearchDomainName: String!, $ActionName: String!, $Url: String!, $Method: String!, $Headers: [HttpHeaderEntryInput!]!, $BodyTemplate: String!, $IgnoreSSL: Boolean!, $UseProxy: Boolean!) {
-	createWebhookAction(input: {viewName:$SearchDomainName,name:$ActionName,url:$Url,method:$Method,headers:$Headers,bodyTemplate:$BodyTemplate,ignoreSSL:$IgnoreSSL,useProxy:$UseProxy}) {
+mutation CreateWebhookAction ($SearchDomainName: String!, $ActionName: String!, $Url: String!, $Method: String!, $Headers: [HttpHeaderEntryInput!]!, $BodyTemplate: String!, $IgnoreSSL: Boolean!, $UseProxy: Boolean!, $Labels: [String!]) {
+	createWebhookAction(input: {viewName:$SearchDomainName,name:$ActionName,url:$Url,method:$Method,headers:$Headers,bodyTemplate:$BodyTemplate,ignoreSSL:$IgnoreSSL,useProxy:$UseProxy,labels:$Labels}) {
 		id
 		name
 		url
@@ -17697,6 +20852,7 @@ mutation CreateWebhookAction ($SearchDomainName: String!, $ActionName: String!, 
 		bodyTemplate
 		ignoreSSL
 		useProxy
+		labels
 	}
 }
 `
@@ -17712,6 +20868,7 @@ func CreateWebhookAction(
 	BodyTemplate string,
 	IgnoreSSL bool,
 	UseProxy bool,
+	Labels []string,
 ) (*CreateWebhookActionResponse, error) {
 	req_ := &graphql.Request{
 		OpName: "CreateWebhookAction",
@@ -17725,6 +20882,7 @@ func CreateWebhookAction(
 			BodyTemplate:     BodyTemplate,
 			IgnoreSSL:        IgnoreSSL,
 			UseProxy:         UseProxy,
+			Labels:           Labels,
 		},
 	}
 	var err_ error
@@ -18320,19 +21478,23 @@ fragment ActionDetails on Action {
 		subjectTemplate
 		emailBodyTemplate: bodyTemplate
 		useProxy
+		labels
 	}
 	... on HumioRepoAction {
 		ingestToken
+		labels
 	}
 	... on OpsGenieAction {
 		apiUrl
 		genieKey
 		useProxy
+		labels
 	}
 	... on PagerDutyAction {
 		severity
 		routingKey
 		useProxy
+		labels
 	}
 	... on SlackAction {
 		url
@@ -18341,6 +21503,7 @@ fragment ActionDetails on Action {
 			value
 		}
 		useProxy
+		labels
 	}
 	... on SlackPostMessageAction {
 		apiToken
@@ -18350,14 +21513,17 @@ fragment ActionDetails on Action {
 			value
 		}
 		useProxy
+		labels
 	}
 	... on VictorOpsAction {
 		messageType
 		notifyUrl
 		useProxy
+		labels
 	}
 	... on UploadFileAction {
 		fileName
+		labels
 	}
 	... on WebhookAction {
 		method
@@ -18369,6 +21535,17 @@ fragment ActionDetails on Action {
 		WebhookBodyTemplate: bodyTemplate
 		ignoreSSL
 		useProxy
+		labels
+	}
+	... on S3Action {
+		roleArn
+		awsRegion
+		bucketName
+		fileName
+		outputFormat
+		outputMetadata
+		useProxy
+		labels
 	}
 }
 `
@@ -18987,158 +22164,6 @@ func GetUsersByUsername(
 	return &data_, err_
 }
 
-// The query or mutation executed by LegacyCreateParser.
-const LegacyCreateParser_Operation = `
-mutation LegacyCreateParser ($RepositoryName: String!, $Name: String!, $TestData: [String!]!, $TagFields: [String!]!, $SourceCode: String!, $Force: Boolean!) {
-	createParser(input: {name:$Name,repositoryName:$RepositoryName,testData:$TestData,tagFields:$TagFields,sourceCode:$SourceCode,force:$Force}) {
-		parser {
-			... ParserDetails
-		}
-	}
-}
-fragment ParserDetails on Parser {
-	id
-	name
-	displayName
-	description
-	isBuiltIn
-	script
-	fieldsToTag
-	fieldsToBeRemovedBeforeParsing
-	testCases {
-		event {
-			rawString
-		}
-		outputAssertions {
-			assertions {
-				fieldsHaveValues {
-					fieldName
-					expectedValue
-				}
-				fieldsNotPresent
-			}
-			outputEventIndex
-		}
-	}
-}
-`
-
-func LegacyCreateParser(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	RepositoryName string,
-	Name string,
-	TestData []string,
-	TagFields []string,
-	SourceCode string,
-	Force bool,
-) (*LegacyCreateParserResponse, error) {
-	req_ := &graphql.Request{
-		OpName: "LegacyCreateParser",
-		Query:  LegacyCreateParser_Operation,
-		Variables: &__LegacyCreateParserInput{
-			RepositoryName: RepositoryName,
-			Name:           Name,
-			TestData:       TestData,
-			TagFields:      TagFields,
-			SourceCode:     SourceCode,
-			Force:          Force,
-		},
-	}
-	var err_ error
-
-	var data_ LegacyCreateParserResponse
-	resp_ := &graphql.Response{Data: &data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return &data_, err_
-}
-
-// The query or mutation executed by LegacyDeleteParserByID.
-const LegacyDeleteParserByID_Operation = `
-mutation LegacyDeleteParserByID ($RepositoryName: String!, $ParserID: String!) {
-	removeParser(input: {repositoryName:$RepositoryName,id:$ParserID}) {
-		__typename
-	}
-}
-`
-
-func LegacyDeleteParserByID(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	RepositoryName string,
-	ParserID string,
-) (*LegacyDeleteParserByIDResponse, error) {
-	req_ := &graphql.Request{
-		OpName: "LegacyDeleteParserByID",
-		Query:  LegacyDeleteParserByID_Operation,
-		Variables: &__LegacyDeleteParserByIDInput{
-			RepositoryName: RepositoryName,
-			ParserID:       ParserID,
-		},
-	}
-	var err_ error
-
-	var data_ LegacyDeleteParserByIDResponse
-	resp_ := &graphql.Response{Data: &data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return &data_, err_
-}
-
-// The query or mutation executed by LegacyGetParser.
-const LegacyGetParser_Operation = `
-query LegacyGetParser ($RepositoryName: String!, $ParserName: String!) {
-	repository(name: $RepositoryName) {
-		parser(name: $ParserName) {
-			id
-			name
-			sourceCode
-			testData
-			tagFields
-		}
-	}
-}
-`
-
-func LegacyGetParser(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	RepositoryName string,
-	ParserName string,
-) (*LegacyGetParserResponse, error) {
-	req_ := &graphql.Request{
-		OpName: "LegacyGetParser",
-		Query:  LegacyGetParser_Operation,
-		Variables: &__LegacyGetParserInput{
-			RepositoryName: RepositoryName,
-			ParserName:     ParserName,
-		},
-	}
-	var err_ error
-
-	var data_ LegacyGetParserResponse
-	resp_ := &graphql.Response{Data: &data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return &data_, err_
-}
-
 // The query or mutation executed by ListActions.
 const ListActions_Operation = `
 query ListActions ($SearchDomainName: String!) {
@@ -19158,19 +22183,23 @@ fragment ActionDetails on Action {
 		subjectTemplate
 		emailBodyTemplate: bodyTemplate
 		useProxy
+		labels
 	}
 	... on HumioRepoAction {
 		ingestToken
+		labels
 	}
 	... on OpsGenieAction {
 		apiUrl
 		genieKey
 		useProxy
+		labels
 	}
 	... on PagerDutyAction {
 		severity
 		routingKey
 		useProxy
+		labels
 	}
 	... on SlackAction {
 		url
@@ -19179,6 +22208,7 @@ fragment ActionDetails on Action {
 			value
 		}
 		useProxy
+		labels
 	}
 	... on SlackPostMessageAction {
 		apiToken
@@ -19188,14 +22218,17 @@ fragment ActionDetails on Action {
 			value
 		}
 		useProxy
+		labels
 	}
 	... on VictorOpsAction {
 		messageType
 		notifyUrl
 		useProxy
+		labels
 	}
 	... on UploadFileAction {
 		fileName
+		labels
 	}
 	... on WebhookAction {
 		method
@@ -19207,6 +22240,17 @@ fragment ActionDetails on Action {
 		WebhookBodyTemplate: bodyTemplate
 		ignoreSSL
 		useProxy
+		labels
+	}
+	... on S3Action {
+		roleArn
+		awsRegion
+		bucketName
+		fileName
+		outputFormat
+		outputMetadata
+		useProxy
+		labels
 	}
 }
 `
@@ -19226,6 +22270,113 @@ func ListActions(
 	var err_ error
 
 	var data_ ListActionsResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by ListActionsWithoutS3.
+const ListActionsWithoutS3_Operation = `
+query ListActionsWithoutS3 ($SearchDomainName: String!) {
+	searchDomain(name: $SearchDomainName) {
+		__typename
+		actions {
+			__typename
+			... ActionDetailsWithoutS3
+		}
+	}
+}
+fragment ActionDetailsWithoutS3 on Action {
+	id
+	name
+	... on EmailAction {
+		recipients
+		subjectTemplate
+		emailBodyTemplate: bodyTemplate
+		useProxy
+		labels
+	}
+	... on HumioRepoAction {
+		ingestToken
+		labels
+	}
+	... on OpsGenieAction {
+		apiUrl
+		genieKey
+		useProxy
+		labels
+	}
+	... on PagerDutyAction {
+		severity
+		routingKey
+		useProxy
+		labels
+	}
+	... on SlackAction {
+		url
+		fields {
+			fieldName
+			value
+		}
+		useProxy
+		labels
+	}
+	... on SlackPostMessageAction {
+		apiToken
+		channels
+		fields {
+			fieldName
+			value
+		}
+		useProxy
+		labels
+	}
+	... on VictorOpsAction {
+		messageType
+		notifyUrl
+		useProxy
+		labels
+	}
+	... on UploadFileAction {
+		fileName
+		labels
+	}
+	... on WebhookAction {
+		method
+		url
+		headers {
+			header
+			value
+		}
+		WebhookBodyTemplate: bodyTemplate
+		ignoreSSL
+		useProxy
+		labels
+	}
+}
+`
+
+func ListActionsWithoutS3(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	SearchDomainName string,
+) (*ListActionsWithoutS3Response, error) {
+	req_ := &graphql.Request{
+		OpName: "ListActionsWithoutS3",
+		Query:  ListActionsWithoutS3_Operation,
+		Variables: &__ListActionsWithoutS3Input{
+			SearchDomainName: SearchDomainName,
+		},
+	}
+	var err_ error
+
+	var data_ ListActionsWithoutS3Response
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -19316,7 +22467,6 @@ fragment AlertDetails on Alert {
 	queryStart
 	throttleField
 	timeOfLastTrigger
-	isStarred
 	description
 	throttleTimeMillis
 	enabled

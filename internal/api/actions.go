@@ -8,6 +8,23 @@ import (
 	"github.com/humio/cli/internal/api/humiographql"
 )
 
+const LogScaleVersionWithS3Action = "1.221.0"
+
+type ActionType string
+
+const (
+	ActionTypeEmail            ActionType = "EmailAction"
+	ActionTypeHumioRepo        ActionType = "HumioRepoAction"
+	ActionTypeOpsGenie         ActionType = "OpsGenieAction"
+	ActionTypePagerDuty        ActionType = "PagerDutyAction"
+	ActionTypeSlack            ActionType = "SlackAction"
+	ActionTypeSlackPostMessage ActionType = "SlackPostMessageAction"
+	ActionTypeVictorOps        ActionType = "VictorOpsAction"
+	ActionTypeUploadFile       ActionType = "UploadFileAction"
+	ActionTypeWebhook          ActionType = "WebhookAction"
+	ActionTypeS3               ActionType = "S3Action"
+)
+
 type Actions struct {
 	client *Client
 }
@@ -17,22 +34,26 @@ type EmailAction struct {
 	SubjectTemplate *string
 	BodyTemplate    *string
 	UseProxy        bool
+	Labels          []string
 }
 
 type HumioRepoAction struct {
 	IngestToken string
+	Labels      []string
 }
 
 type OpsGenieAction struct {
 	ApiUrl   string
 	GenieKey string
 	UseProxy bool
+	Labels   []string
 }
 
 type PagerDutyAction struct {
 	Severity   string
 	RoutingKey string
 	UseProxy   bool
+	Labels     []string
 }
 
 type SlackField struct {
@@ -44,6 +65,7 @@ type SlackAction struct {
 	Url      string
 	Fields   []SlackField
 	UseProxy bool
+	Labels   []string
 }
 
 type SlackPostMessageAction struct {
@@ -51,16 +73,19 @@ type SlackPostMessageAction struct {
 	Channels []string
 	Fields   []SlackField
 	UseProxy bool
+	Labels   []string
 }
 
 type UploadFileAction struct {
 	FileName string
+	Labels   []string
 }
 
 type VictorOpsAction struct {
 	MessageType string
 	NotifyUrl   string
 	UseProxy    bool
+	Labels      []string
 }
 
 type HttpHeader struct {
@@ -75,10 +100,22 @@ type WebhookAction struct {
 	BodyTemplate string
 	IgnoreSSL    bool
 	UseProxy     bool
+	Labels       []string
+}
+
+type S3Action struct {
+	RoleArn        string
+	AwsRegion      string
+	BucketName     string
+	FileName       string
+	OutputFormat   string
+	OutputMetadata bool
+	UseProxy       bool
+	Labels         []string
 }
 
 type Action struct {
-	Type string
+	Type ActionType
 	ID   string `yaml:"-"`
 	Name string
 
@@ -91,11 +128,59 @@ type Action struct {
 	VictorOpsAction        VictorOpsAction        `yaml:"victorOpsAction,omitempty"`
 	UploadFileAction       UploadFileAction       `yaml:"uploadFileAction,omitempty"`
 	WebhookAction          WebhookAction          `yaml:"webhookAction,omitempty"`
+	S3Action               S3Action               `yaml:"s3Action,omitempty"`
+}
+
+// GetLabels returns the labels from the specific action type
+func (a Action) GetLabels() []string {
+	switch a.Type {
+	case ActionTypeEmail:
+		return a.EmailAction.Labels
+	case ActionTypeHumioRepo:
+		return a.HumioRepoAction.Labels
+	case ActionTypeOpsGenie:
+		return a.OpsGenieAction.Labels
+	case ActionTypePagerDuty:
+		return a.PagerDutyAction.Labels
+	case ActionTypeSlack:
+		return a.SlackAction.Labels
+	case ActionTypeSlackPostMessage:
+		return a.SlackPostMessageAction.Labels
+	case ActionTypeVictorOps:
+		return a.VictorOpsAction.Labels
+	case ActionTypeUploadFile:
+		return a.UploadFileAction.Labels
+	case ActionTypeWebhook:
+		return a.WebhookAction.Labels
+	case ActionTypeS3:
+		return a.S3Action.Labels
+	default:
+		return nil
+	}
 }
 
 func (c *Client) Actions() *Actions { return &Actions{client: c} }
 
+func (n *Actions) serverSupportsS3Actions() (bool, error) {
+	status, err := n.client.Status()
+	if err != nil {
+		return false, err
+	}
+	return status.AtLeast(LogScaleVersionWithS3Action)
+}
+
 func (n *Actions) List(searchDomainName string) ([]Action, error) {
+	s3Supported, err := n.serverSupportsS3Actions()
+	if err != nil {
+		return nil, fmt.Errorf("unable to determine server version: %w", err)
+	}
+	if s3Supported {
+		return n.listWithS3(searchDomainName)
+	}
+	return n.listWithoutS3(searchDomainName)
+}
+
+func (n *Actions) listWithS3(searchDomainName string) ([]Action, error) {
 	resp, err := humiographql.ListActions(context.Background(), n.client, searchDomainName)
 	if err != nil {
 		return nil, err
@@ -107,7 +192,7 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 		switch v := action.(type) {
 		case *humiographql.ListActionsSearchDomainActionsEmailAction:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				EmailAction: EmailAction{
@@ -115,37 +200,41 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 					SubjectTemplate: v.GetSubjectTemplate(),
 					BodyTemplate:    v.GetEmailBodyTemplate(),
 					UseProxy:        v.GetUseProxy(),
+					Labels:          v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsHumioRepoAction:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				HumioRepoAction: HumioRepoAction{
 					IngestToken: v.GetIngestToken(),
+					Labels:      v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsOpsGenieAction:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				OpsGenieAction: OpsGenieAction{
 					ApiUrl:   v.GetApiUrl(),
 					GenieKey: v.GetGenieKey(),
 					UseProxy: v.GetUseProxy(),
+					Labels:   v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsPagerDutyAction:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				PagerDutyAction: PagerDutyAction{
 					Severity:   v.GetSeverity(),
 					RoutingKey: v.GetRoutingKey(),
 					UseProxy:   v.GetUseProxy(),
+					Labels:     v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsSlackAction:
@@ -157,13 +246,14 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 				}
 			}
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				SlackAction: SlackAction{
 					Url:      v.GetUrl(),
 					Fields:   fields,
 					UseProxy: v.GetUseProxy(),
+					Labels:   v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsSlackPostMessageAction:
@@ -175,7 +265,7 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 				}
 			}
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				SlackPostMessageAction: SlackPostMessageAction{
@@ -183,26 +273,29 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 					Channels: v.GetChannels(),
 					Fields:   fields,
 					UseProxy: v.GetUseProxy(),
+					Labels:   v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsVictorOpsAction:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				VictorOpsAction: VictorOpsAction{
 					MessageType: v.GetMessageType(),
 					NotifyUrl:   v.GetNotifyUrl(),
 					UseProxy:    v.GetUseProxy(),
+					Labels:      v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsUploadFileAction:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				UploadFileAction: UploadFileAction{
 					FileName: v.GetFileName(),
+					Labels:   v.GetLabels(),
 				},
 			}
 		case *humiographql.ListActionsSearchDomainActionsWebhookAction:
@@ -214,7 +307,7 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 				}
 			}
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 				WebhookAction: WebhookAction{
@@ -224,11 +317,180 @@ func (n *Actions) List(searchDomainName string) ([]Action, error) {
 					BodyTemplate: v.GetWebhookBodyTemplate(),
 					IgnoreSSL:    v.GetIgnoreSSL(),
 					UseProxy:     v.GetUseProxy(),
+					Labels:       v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsSearchDomainActionsS3Action:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				S3Action: S3Action{
+					RoleArn:        v.GetRoleArn(),
+					AwsRegion:      v.GetAwsRegion(),
+					BucketName:     v.GetBucketName(),
+					FileName:       v.GetFileName(),
+					OutputFormat:   string(v.GetOutputFormat()),
+					OutputMetadata: v.GetOutputMetadata(),
+					UseProxy:       v.GetUseProxy(),
+					Labels:         v.GetLabels(),
 				},
 			}
 		default:
 			actions[idx] = Action{
-				Type: *v.GetTypename(),
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+			}
+		}
+	}
+
+	return actions, nil
+}
+
+func (n *Actions) listWithoutS3(searchDomainName string) ([]Action, error) {
+	resp, err := humiographql.ListActionsWithoutS3(context.Background(), n.client, searchDomainName)
+	if err != nil {
+		return nil, err
+	}
+	respSearchDomain := resp.GetSearchDomain()
+	respSearchDomainActions := respSearchDomain.GetActions()
+	actions := make([]Action, len(respSearchDomainActions))
+	for idx, action := range respSearchDomainActions {
+		switch v := action.(type) {
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsEmailAction:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				EmailAction: EmailAction{
+					Recipients:      v.GetRecipients(),
+					SubjectTemplate: v.GetSubjectTemplate(),
+					BodyTemplate:    v.GetEmailBodyTemplate(),
+					UseProxy:        v.GetUseProxy(),
+					Labels:          v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsHumioRepoAction:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				HumioRepoAction: HumioRepoAction{
+					IngestToken: v.GetIngestToken(),
+					Labels:      v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsOpsGenieAction:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				OpsGenieAction: OpsGenieAction{
+					ApiUrl:   v.GetApiUrl(),
+					GenieKey: v.GetGenieKey(),
+					UseProxy: v.GetUseProxy(),
+					Labels:   v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsPagerDutyAction:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				PagerDutyAction: PagerDutyAction{
+					Severity:   v.GetSeverity(),
+					RoutingKey: v.GetRoutingKey(),
+					UseProxy:   v.GetUseProxy(),
+					Labels:     v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsSlackAction:
+			fields := make([]SlackField, len(v.GetFields()))
+			for jdx, field := range v.GetFields() {
+				fields[jdx] = SlackField{
+					FieldName: field.GetFieldName(),
+					Value:     field.GetValue(),
+				}
+			}
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				SlackAction: SlackAction{
+					Url:      v.GetUrl(),
+					Fields:   fields,
+					UseProxy: v.GetUseProxy(),
+					Labels:   v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsSlackPostMessageAction:
+			fields := make([]SlackField, len(v.GetFields()))
+			for jdx, field := range v.GetFields() {
+				fields[jdx] = SlackField{
+					FieldName: field.GetFieldName(),
+					Value:     field.GetValue(),
+				}
+			}
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				SlackPostMessageAction: SlackPostMessageAction{
+					ApiToken: v.GetApiToken(),
+					Channels: v.GetChannels(),
+					Fields:   fields,
+					UseProxy: v.GetUseProxy(),
+					Labels:   v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsVictorOpsAction:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				VictorOpsAction: VictorOpsAction{
+					MessageType: v.GetMessageType(),
+					NotifyUrl:   v.GetNotifyUrl(),
+					UseProxy:    v.GetUseProxy(),
+					Labels:      v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsUploadFileAction:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				UploadFileAction: UploadFileAction{
+					FileName: v.GetFileName(),
+					Labels:   v.GetLabels(),
+				},
+			}
+		case *humiographql.ListActionsWithoutS3SearchDomainActionsWebhookAction:
+			headers := make([]HttpHeader, len(v.GetHeaders()))
+			for jdx, header := range v.GetHeaders() {
+				headers[jdx] = HttpHeader{
+					Header: header.GetHeader(),
+					Value:  header.GetValue(),
+				}
+			}
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
+				ID:   v.GetId(),
+				Name: v.GetName(),
+				WebhookAction: WebhookAction{
+					Method:       v.GetMethod(),
+					Url:          v.GetUrl(),
+					Headers:      headers,
+					BodyTemplate: v.GetWebhookBodyTemplate(),
+					IgnoreSSL:    v.GetIgnoreSSL(),
+					UseProxy:     v.GetUseProxy(),
+					Labels:       v.GetLabels(),
+				},
+			}
+		default:
+			actions[idx] = Action{
+				Type: ActionType(*v.GetTypename()),
 				ID:   v.GetId(),
 				Name: v.GetName(),
 			}
@@ -253,6 +515,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			newAction.EmailAction.SubjectTemplate,
 			newAction.EmailAction.BodyTemplate,
 			newAction.EmailAction.UseProxy,
+			newAction.EmailAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -260,6 +523,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 
 		respUpdate := resp.GetCreateEmailAction()
 		return &Action{
+			Type: ActionTypeEmail,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			EmailAction: EmailAction{
@@ -267,6 +531,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 				SubjectTemplate: respUpdate.GetSubjectTemplate(),
 				BodyTemplate:    respUpdate.GetBodyTemplate(),
 				UseProxy:        respUpdate.GetUseProxy(),
+				Labels:          respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -278,6 +543,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			searchDomainName,
 			newAction.Name,
 			newAction.HumioRepoAction.IngestToken,
+			newAction.HumioRepoAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -285,10 +551,12 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 
 		respUpdate := resp.GetCreateHumioRepoAction()
 		return &Action{
+			Type: ActionTypeHumioRepo,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			HumioRepoAction: HumioRepoAction{
 				IngestToken: respUpdate.GetIngestToken(),
+				Labels:      respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -302,6 +570,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			newAction.OpsGenieAction.ApiUrl,
 			newAction.OpsGenieAction.GenieKey,
 			newAction.OpsGenieAction.UseProxy,
+			newAction.OpsGenieAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -309,12 +578,14 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 
 		respUpdate := resp.GetCreateOpsGenieAction()
 		return &Action{
+			Type: ActionTypeOpsGenie,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			OpsGenieAction: OpsGenieAction{
 				ApiUrl:   respUpdate.GetApiUrl(),
 				GenieKey: respUpdate.GetGenieKey(),
 				UseProxy: respUpdate.GetUseProxy(),
+				Labels:   respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -328,6 +599,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			newAction.PagerDutyAction.Severity,
 			newAction.PagerDutyAction.RoutingKey,
 			newAction.PagerDutyAction.UseProxy,
+			newAction.PagerDutyAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -335,12 +607,14 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 
 		respUpdate := resp.GetCreatePagerDutyAction()
 		return &Action{
+			Type: ActionTypePagerDuty,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			PagerDutyAction: PagerDutyAction{
 				Severity:   respUpdate.GetSeverity(),
 				RoutingKey: respUpdate.GetRoutingKey(),
 				UseProxy:   respUpdate.GetUseProxy(),
+				Labels:     respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -361,6 +635,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			fields,
 			newAction.SlackAction.Url,
 			newAction.SlackAction.UseProxy,
+			newAction.SlackAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -376,12 +651,14 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			}
 		}
 		return &Action{
+			Type: ActionTypeSlack,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			SlackAction: SlackAction{
 				Fields:   fieldsUpdate,
 				Url:      respUpdate.GetUrl(),
 				UseProxy: respUpdate.GetUseProxy(),
+				Labels:   respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -403,6 +680,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			newAction.SlackPostMessageAction.Channels,
 			fields,
 			newAction.SlackPostMessageAction.UseProxy,
+			newAction.SlackPostMessageAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -418,6 +696,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			}
 		}
 		return &Action{
+			Type: ActionTypeSlackPostMessage,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			SlackPostMessageAction: SlackPostMessageAction{
@@ -425,6 +704,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 				Channels: respUpdate.GetChannels(),
 				Fields:   fieldsUpdate,
 				UseProxy: respUpdate.GetUseProxy(),
+				Labels:   respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -438,6 +718,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			newAction.VictorOpsAction.MessageType,
 			newAction.VictorOpsAction.NotifyUrl,
 			newAction.VictorOpsAction.UseProxy,
+			newAction.VictorOpsAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -445,12 +726,14 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 
 		respUpdate := resp.GetCreateVictorOpsAction()
 		return &Action{
+			Type: ActionTypeVictorOps,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			VictorOpsAction: VictorOpsAction{
 				MessageType: respUpdate.GetMessageType(),
 				NotifyUrl:   respUpdate.GetNotifyUrl(),
 				UseProxy:    respUpdate.GetUseProxy(),
+				Labels:      respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -462,6 +745,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			searchDomainName,
 			newAction.Name,
 			newAction.UploadFileAction.FileName,
+			newAction.UploadFileAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -469,10 +753,12 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 
 		respUpdate := resp.GetCreateUploadFileAction()
 		return &Action{
+			Type: ActionTypeUploadFile,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			UploadFileAction: UploadFileAction{
 				FileName: respUpdate.GetFileName(),
+				Labels:   respUpdate.GetLabels(),
 			},
 		}, nil
 	}
@@ -496,6 +782,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			newAction.WebhookAction.BodyTemplate,
 			newAction.WebhookAction.IgnoreSSL,
 			newAction.WebhookAction.UseProxy,
+			newAction.WebhookAction.Labels,
 		)
 		if err != nil {
 			return nil, err
@@ -511,6 +798,7 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 			}
 		}
 		return &Action{
+			Type: ActionTypeWebhook,
 			ID:   respUpdate.GetId(),
 			Name: respUpdate.GetName(),
 			WebhookAction: WebhookAction{
@@ -520,6 +808,51 @@ func (n *Actions) Add(searchDomainName string, newAction *Action) (*Action, erro
 				BodyTemplate: respUpdate.GetBodyTemplate(),
 				IgnoreSSL:    respUpdate.GetIgnoreSSL(),
 				UseProxy:     respUpdate.GetUseProxy(),
+				Labels:       respUpdate.GetLabels(),
+			},
+		}, nil
+	}
+
+	if !reflect.ValueOf(newAction.S3Action).IsZero() {
+		s3Supported, err := n.serverSupportsS3Actions()
+		if err != nil {
+			return nil, fmt.Errorf("unable to determine server version: %w", err)
+		}
+		if !s3Supported {
+			return nil, fmt.Errorf("S3 actions require LogScale version %s or later", LogScaleVersionWithS3Action)
+		}
+		resp, err := humiographql.CreateS3Action(
+			context.Background(),
+			n.client,
+			searchDomainName,
+			newAction.Name,
+			newAction.S3Action.RoleArn,
+			newAction.S3Action.AwsRegion,
+			newAction.S3Action.BucketName,
+			newAction.S3Action.FileName,
+			humiographql.S3ActionEventOutputFormat(newAction.S3Action.OutputFormat),
+			newAction.S3Action.OutputMetadata,
+			newAction.S3Action.UseProxy,
+			newAction.S3Action.Labels,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		respUpdate := resp.GetCreateS3Action()
+		return &Action{
+			Type: ActionTypeS3,
+			ID:   respUpdate.GetId(),
+			Name: respUpdate.GetName(),
+			S3Action: S3Action{
+				RoleArn:        respUpdate.GetRoleArn(),
+				AwsRegion:      respUpdate.GetAwsRegion(),
+				BucketName:     respUpdate.GetBucketName(),
+				FileName:       respUpdate.GetFileName(),
+				OutputFormat:   string(respUpdate.GetOutputFormat()),
+				OutputMetadata: respUpdate.GetOutputMetadata(),
+				UseProxy:       respUpdate.GetUseProxy(),
+				Labels:         respUpdate.GetLabels(),
 			},
 		}, nil
 	}

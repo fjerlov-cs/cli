@@ -1,8 +1,6 @@
 module github.com/humio/cli
 
-go 1.22.0
-
-toolchain go1.22.6
+go 1.24.0
 
 require (
 	github.com/Khan/genqlient v0.7.0
@@ -15,8 +13,8 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.18.2
 	github.com/vektah/gqlparser/v2 v2.5.16
-	golang.org/x/sync v0.8.0
-	golang.org/x/sys v0.23.0
+	golang.org/x/sync v0.19.0
+	golang.org/x/sys v0.41.0
 	golang.org/x/term v0.19.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -41,9 +39,9 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
-	golang.org/x/mod v0.21.0 // indirect
+	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.24.0 // indirect
+	golang.org/x/tools v0.42.0 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect

@@ -15,6 +15,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/humio/cli/internal/format"
 	"github.com/spf13/cobra"
 )
@@ -34,10 +36,15 @@ func newActionsListCmd() *cobra.Command {
 			var rows [][]format.Value
 			for i := 0; i < len(actions); i++ {
 				action := actions[i]
-				rows = append(rows, []format.Value{format.String(action.Name), format.String(action.Type)})
+
+				rows = append(rows, []format.Value{
+					format.String(action.Name),
+					format.String(string(action.Type)),
+					format.String(strings.Join(action.GetLabels(), ",")),
+				})
 			}
 
-			printOverviewTable(cmd, []string{"Name", "Type"}, rows)
+			printOverviewTable(cmd, []string{"Name", "Type", "Labels"}, rows)
 		},
 	}
 

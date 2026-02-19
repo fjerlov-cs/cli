@@ -7,23 +7,26 @@ fragment ActionDetails on Action{
         subjectTemplate
         emailBodyTemplate: bodyTemplate
         useProxy
-
+        labels
     }
 
     ... on HumioRepoAction {
         ingestToken
+        labels
     }
 
     ... on OpsGenieAction {
         apiUrl
         genieKey
         useProxy
+        labels
     }
 
     ... on PagerDutyAction {
         severity
         routingKey
         useProxy
+        labels
     }
 
     ... on SlackAction {
@@ -33,6 +36,7 @@ fragment ActionDetails on Action{
             value
         }
         useProxy
+        labels
     }
 
     ... on SlackPostMessageAction {
@@ -43,16 +47,19 @@ fragment ActionDetails on Action{
             value
         }
         useProxy
+        labels
     }
 
     ... on VictorOpsAction {
         messageType
         notifyUrl
         useProxy
+        labels
     }
 
     ... on UploadFileAction {
         fileName
+        labels
     }
 
     ... on WebhookAction {
@@ -65,6 +72,96 @@ fragment ActionDetails on Action{
         WebhookBodyTemplate: bodyTemplate
         ignoreSSL
         useProxy
+        labels
+    }
+
+    ... on S3Action {
+        roleArn
+        awsRegion
+        bucketName
+        fileName
+        outputFormat
+        outputMetadata
+        useProxy
+        labels
+    }
+}
+
+fragment ActionDetailsWithoutS3 on Action{
+    id
+    name
+
+    ... on EmailAction {
+        recipients
+        subjectTemplate
+        emailBodyTemplate: bodyTemplate
+        useProxy
+        labels
+    }
+
+    ... on HumioRepoAction {
+        ingestToken
+        labels
+    }
+
+    ... on OpsGenieAction {
+        apiUrl
+        genieKey
+        useProxy
+        labels
+    }
+
+    ... on PagerDutyAction {
+        severity
+        routingKey
+        useProxy
+        labels
+    }
+
+    ... on SlackAction {
+        url
+        fields {
+            fieldName
+            value
+        }
+        useProxy
+        labels
+    }
+
+    ... on SlackPostMessageAction {
+        apiToken
+        channels
+        fields {
+            fieldName
+            value
+        }
+        useProxy
+        labels
+    }
+
+    ... on VictorOpsAction {
+        messageType
+        notifyUrl
+        useProxy
+        labels
+    }
+
+    ... on UploadFileAction {
+        fileName
+        labels
+    }
+
+    ... on WebhookAction {
+        method
+        url
+        headers {
+            header
+            value
+        }
+        WebhookBodyTemplate: bodyTemplate
+        ignoreSSL
+        useProxy
+        labels
     }
 }
 
@@ -76,6 +173,18 @@ query ListActions(
     ) {
         actions {
             ...ActionDetails
+        }
+    }
+}
+
+query ListActionsWithoutS3(
+    $SearchDomainName: String!
+) {
+    searchDomain(
+        name: $SearchDomainName
+    ) {
+        actions {
+            ...ActionDetailsWithoutS3
         }
     }
 }
@@ -112,6 +221,7 @@ mutation CreateEmailAction(
     $SubjectTemplate: String
     $BodyTemplate: String
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createEmailAction(input: {
         viewName: $SearchDomainName
@@ -120,6 +230,7 @@ mutation CreateEmailAction(
         subjectTemplate: $SubjectTemplate
         bodyTemplate: $BodyTemplate
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
@@ -127,6 +238,7 @@ mutation CreateEmailAction(
         subjectTemplate
         bodyTemplate
         useProxy
+        labels
     }
 }
 
@@ -134,15 +246,18 @@ mutation CreateHumioRepoAction(
     $SearchDomainName: String!
     $ActionName: String!
     $IngestToken: String!
+    $Labels: [String!]
 ) {
     createHumioRepoAction(input: {
         viewName: $SearchDomainName
         name: $ActionName
         ingestToken: $IngestToken
+        labels: $Labels
     }) {
         id
         name
         ingestToken
+        labels
     }
 }
 
@@ -152,6 +267,7 @@ mutation CreateOpsGenieAction(
     $ApiUrl: String!
     $GenieKey: String!
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createOpsGenieAction(input: {
         viewName: $SearchDomainName
@@ -159,12 +275,14 @@ mutation CreateOpsGenieAction(
         apiUrl: $ApiUrl
         genieKey: $GenieKey
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
         apiUrl
         genieKey
         useProxy
+        labels
     }
 }
 
@@ -174,6 +292,7 @@ mutation CreatePagerDutyAction(
     $Severity: String!
     $RoutingKey: String!
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createPagerDutyAction(input: {
         viewName: $SearchDomainName
@@ -181,12 +300,14 @@ mutation CreatePagerDutyAction(
         severity: $Severity
         routingKey: $RoutingKey
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
         severity
         routingKey
         useProxy
+        labels
     }
 }
 
@@ -196,6 +317,7 @@ mutation CreateSlackAction(
     $Fields: [SlackFieldEntryInput!]!
     $Url: String!
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createSlackAction(input: {
         viewName: $SearchDomainName
@@ -203,6 +325,7 @@ mutation CreateSlackAction(
         fields: $Fields
         url: $Url
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
@@ -212,6 +335,7 @@ mutation CreateSlackAction(
         }
         url
         useProxy
+        labels
     }
 }
 
@@ -222,6 +346,7 @@ mutation CreateSlackPostMessageAction(
     $Channels: [String!]!
     $Fields: [SlackFieldEntryInput!]!
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createSlackPostMessageAction(input: {
         viewName: $SearchDomainName
@@ -230,6 +355,7 @@ mutation CreateSlackPostMessageAction(
         channels: $Channels
         fields: $Fields
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
@@ -240,6 +366,7 @@ mutation CreateSlackPostMessageAction(
             fieldName
         }
         useProxy
+        labels
     }
 }
 
@@ -249,6 +376,7 @@ mutation CreateVictorOpsAction(
     $MessageType: String!
     $NotifyUrl: String!
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createVictorOpsAction(input: {
         viewName: $SearchDomainName
@@ -256,12 +384,14 @@ mutation CreateVictorOpsAction(
         messageType: $MessageType
         notifyUrl: $NotifyUrl
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
         messageType
         notifyUrl
         useProxy
+        labels
     }
 }
 
@@ -269,15 +399,18 @@ mutation CreateUploadFileAction(
     $SearchDomainName: String!
     $ActionName: String!
     $FileName: String!
+    $Labels: [String!]
 ) {
     createUploadFileAction(input: {
         viewName: $SearchDomainName
         name: $ActionName
         fileName: $FileName
+        labels: $Labels
     }) {
         id
         name
         fileName
+        labels
     }
 }
 
@@ -290,6 +423,7 @@ mutation CreateWebhookAction(
     $BodyTemplate: String!
     $IgnoreSSL: Boolean!
     $UseProxy: Boolean!
+    $Labels: [String!]
 ) {
     createWebhookAction(input: {
         viewName: $SearchDomainName
@@ -300,6 +434,7 @@ mutation CreateWebhookAction(
         bodyTemplate: $BodyTemplate
         ignoreSSL: $IgnoreSSL
         useProxy: $UseProxy
+        labels: $Labels
     }) {
         id
         name
@@ -312,5 +447,43 @@ mutation CreateWebhookAction(
         bodyTemplate
         ignoreSSL
         useProxy
+        labels
+    }
+}
+
+mutation CreateS3Action(
+    $SearchDomainName: RepoOrViewName!
+    $ActionName: String!
+    $RoleArn: String!
+    $AwsRegion: String!
+    $BucketName: String!
+    $FileName: String!
+    $OutputFormat: S3ActionEventOutputFormat!
+    $OutputMetadata: Boolean!
+    $UseProxy: Boolean!
+    $Labels: [String!]
+) {
+    createS3Action(input: {
+        viewName: $SearchDomainName
+        name: $ActionName
+        roleArn: $RoleArn
+        awsRegion: $AwsRegion
+        bucketName: $BucketName
+        fileName: $FileName
+        outputFormat: $OutputFormat
+        outputMetadata: $OutputMetadata
+        useProxy: $UseProxy
+        labels: $Labels
+    }) {
+        id
+        name
+        roleArn
+        awsRegion
+        bucketName
+        fileName
+        outputFormat
+        outputMetadata
+        useProxy
+        labels
     }
 }
